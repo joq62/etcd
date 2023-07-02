@@ -1,0 +1,12 @@
+{application,etcd,
+             [{description,"An OTP application"},
+              {vsn,"0.1.0"},
+              {registered,[]},
+              {mod,{etcd_app,[]}},
+              {applications,[kernel,stdlib]},
+              {env,[]},
+              {modules,[cmn_appl,db_config,db_deploy,db_deployment_spec,
+                        db_host_spec,db_lock,db_provider_spec,etcd,etcd_app,
+                        etcd_sup,lib_db]},
+              {licenses,["Apache-2.0"]},
+              {links,[]}]}.
