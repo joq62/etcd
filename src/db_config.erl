@@ -9,7 +9,7 @@
 %% --------------------------------------------------------------------
 %% Include files
 %% --------------------------------------------------------------------
-
+-include("etcd.hrl").
 %%---------------------------------------------------------------------
 %% Records for test
 %%
@@ -46,7 +46,10 @@ start()->
     Err_DeploySpec=[X||{error,X}<-DeploySpecList],
 
     ok=db_deploy:create_table(),    
+
+    
     ok=db_lock:create_table(),
+    {atomic,ok}=db_lock:create({db_lock,?OrchestrateLock}),
     
     
     Test=lists:append([Ok_ProviderSpec,Ok_HostSpec,

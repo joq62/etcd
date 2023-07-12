@@ -49,20 +49,20 @@ lock_test_1()->
     LockTimeOut=3000,   %% 3 Seconds
     [{error,[eexists,glurk]}]=db_lock:try_lock(glurk,LockTimeOut),
 
-    {ok,TransActionsId_1}=db_lock:try_lock(schedule,LockTimeOut),
+    {ok,TransActionsId_1}=db_lock:try_lock(orchestrate_lock,LockTimeOut),
     timer:sleep(1*1000),
-    locked=db_lock:try_lock(schedule,LockTimeOut),
+    locked=db_lock:try_lock(orchestrate_lock,LockTimeOut),
 
     {error,[eexists,glurk]}=db_lock:unlock(glurk,TransActionsId_1),
-    {error,["eexists Transactions id",glurk,_]}=db_lock:unlock(schedule,glurk),
+    {error,["eexists Transactions id",glurk,_]}=db_lock:unlock(orchestrate_lock,glurk),
 
-    ok=db_lock:unlock(schedule,TransActionsId_1),
-    {ok,TransActionsId_2}=db_lock:try_lock(schedule,LockTimeOut),
-    locked=db_lock:try_lock(schedule,LockTimeOut),
+    ok=db_lock:unlock(orchestrate_lock,TransActionsId_1),
+    {ok,TransActionsId_2}=db_lock:try_lock(orchestrate_lock,LockTimeOut),
+    locked=db_lock:try_lock(orchestrate_lock,LockTimeOut),
 
     timer:sleep(3*1000),
-    {ok,TransActionsId_3}=db_lock:try_lock(schedule,LockTimeOut),
-    locked=db_lock:try_lock(schedule,LockTimeOut),
+    {ok,TransActionsId_3}=db_lock:try_lock(orchestrate_lock,LockTimeOut),
+    locked=db_lock:try_lock(orchestrate_lock,LockTimeOut),
   
 %    io:format("TransActionsId_1 ~p~n",[{TransActionsId_1,?MODULE,?FUNCTION_NAME,?LINE}]),
 %    io:format("TransActionsId_2 ~p~n",[{TransActionsId_2,?MODULE,?FUNCTION_NAME,?LINE}]),
@@ -76,7 +76,6 @@ lock_test_1()->
 setup()->
     io:format("Start ~p~n",[{?MODULE,?FUNCTION_NAME,?LINE}]),
 
-    {atomic,ok}=db_lock:create({db_lock,schedule}),
-    [{schedule,na,0,na}]=db_lock:read_all_info(),
-    [schedule] =db_lock:read_all(),
+    [{orchestrate_lock,na,0,na}]=db_lock:read_all_info(),
+    [orchestrate_lock]=db_lock:read_all(),
     ok.
