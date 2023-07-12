@@ -3,8 +3,7 @@
 
 -include_lib("stdlib/include/qlc.hrl").
 -include("db_lock.hrl").
-
--define(LockTimeOut, 2*60*1000). %% 30 sec 
+-include("etcd.hrl").
 
 
 create_table()->
