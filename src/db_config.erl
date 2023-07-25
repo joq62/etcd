@@ -29,6 +29,12 @@
 %% @end
 %%--------------------------------------------------------------------
 start()->
+
+    ok=db_cluster_spec:create_table(),    
+    ClusterSpecList=db_cluster_spec:git_clone_load(),
+    Ok_ClusterSpec=[X||{ok,X}<-ClusterSpecList],
+    Err_ClusterSpec=[X||{error,X}<-ClusterSpecList],
+
     ok=db_provider_spec:create_table(),
     ProviderSpecList=db_provider_spec:git_clone_load(),
     Ok_ProviderSpec=[X||{ok,X}<-ProviderSpecList],
@@ -47,17 +53,21 @@ start()->
 
     ok=db_deploy:create_table(),    
 
+
     
     ok=db_lock:create_table(),
     {atomic,ok}=db_lock:create({db_lock,?OrchestrateLock}),
     
     
-    Test=lists:append([Ok_ProviderSpec,Ok_HostSpec,
+    Test=lists:append([
+		       Ok_ClusterSpec,Err_ClusterSpec,		       
+		       Ok_ProviderSpec,Ok_HostSpec,
 		       Err_ProviderSpec,Err_HostSpec]),
     Result=case Test of
 	       []->
 		   {error,[
 			   %{deployment_spec,Ok_DeploySpec,Err_DeploySpec},
+			   {cluster_spec, Ok_ClusterSpec,Err_ClusterSpec},
 			   {provider_spec, Ok_ProviderSpec,Err_ProviderSpec},
 			   {host_spec,Ok_HostSpec,Err_HostSpec}
 			  ]};
