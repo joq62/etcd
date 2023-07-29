@@ -116,6 +116,8 @@ read(Key,SpecId)->
 		   case  Key of
 		       deployment->
 			   {ok,R#?RECORD.deployment_spec};
+		       cookie_str->
+			   {ok,R#?RECORD.cookie_str};
 		       Key ->
 			   {error,['Key eexists',Key,SpecId,?MODULE,?LINE]}
 		   end
