@@ -5,8 +5,8 @@
               {mod,{etcd_app,[]}},
               {applications,[kernel,stdlib]},
               {env,[]},
-              {modules,[cmn_appl,db_cluster_spec,db_config,db_deploy,
-                        db_deployment_spec,db_host_spec,db_lock,
+              {modules,[cmn_appl,db_cluster,db_cluster_spec,db_config,
+                        db_deploy,db_deployment_spec,db_host_spec,db_lock,
                         db_provider_spec,etcd,etcd_app,etcd_sup,lib_db]},
               {licenses,["Apache-2.0"]},
               {links,[]}]}.

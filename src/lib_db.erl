@@ -40,8 +40,10 @@ dynamic_db_init([])->
     mnesia:delete_schema([node()]),
     mnesia:start(),
     %% First node - create the needed tables
+    io:format("First node ~p~n",[node()]),
     db_config:start();
 dynamic_db_init(Nodes) ->
+   io:format("not first node ~p~n",[Nodes]),
     mnesia:stop(),
     mnesia:delete_schema([node()]),
     mnesia:start(),

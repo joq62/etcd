@@ -46,11 +46,21 @@ read_specs_test(Node)->
     true=lists:member(?ClusterSpec,AllClusterSpecs),
 
     {
-     ?ClusterSpec,"test","a"
+     ?ClusterSpec,"test_c50","a"
     }=rpc:call(Node,db_cluster_spec,read,[?ClusterSpec],5000),
     
-    {error,[eexist,"glurk",db_cluster_spec,_]}=rpc:call(Node,db_cluster_spec,read,[deployment_spec,"glurk"],5000),
-    {error,['Key eexists',glurk,?ClusterSpec,db_cluster_spec,_]}=rpc:call(Node,db_cluster_spec,read,[glurk,?ClusterSpec],5000),
+    SpecId="cluster_to_deploy",
+    {atomic,ok}=db_cluster:create(SpecId,?ClusterSpec),
+    
+    [SpecId]==db_cluster:get_all_id(),
+    {ok,?ClusterSpec}=db_cluster:read(cluster_spec,SpecId),
+    {atomic,ok}=db_cluster:create(SpecId,another),
+    {ok,another}=db_cluster:read(cluster_spec,SpecId),
+    
+    
+    
+    {error,[eexist,"glurk",db_cluster,_]}=rpc:call(Node,db_cluster,read,[cluster_spec,"glurk"],5000),
+    {error,[eexist,"test_local_cluster",db_cluster,_]}=rpc:call(Node,db_cluster,read,[glurk,?ClusterSpec],5000),
  
        ok.
 

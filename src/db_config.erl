@@ -29,6 +29,11 @@
 %% @end
 %%--------------------------------------------------------------------
 start()->
+    
+
+    ok=db_cluster:create_table(),
+    ok=db_deploy:create_table(),    
+   % ok=db_cluster_to_deploy:create_table(),
 
     ok=db_cluster_spec:create_table(),    
     ClusterSpecList=db_cluster_spec:git_clone_load(),
@@ -51,13 +56,11 @@ start()->
     Ok_DeploySpec=[X||{ok,X}<-DeploySpecList],
     Err_DeploySpec=[X||{error,X}<-DeploySpecList],
 
-    ok=db_deploy:create_table(),    
-
-
-    
     ok=db_lock:create_table(),
     {atomic,ok}=db_lock:create({db_lock,?OrchestrateLock}),
-    
+
+    ok=db_deploy:create_table(),    
+ 
     
     Test=lists:append([
 		       Ok_ClusterSpec,Err_ClusterSpec,		       
