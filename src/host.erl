@@ -4,7 +4,7 @@
 %%%
 %%% @end
 %%% Created : 21 Dec 2022 by c50 <joq62@c50>
--module(db_host_spec).
+-module(host).
 
 %% --------------------------------------------------------------------
 %% Include files
@@ -12,6 +12,7 @@
 -import(lists, [foreach/2]).
 -include_lib("stdlib/include/qlc.hrl").
 -include("db_host_spec.hrl").
+
 
 %% External exports
 

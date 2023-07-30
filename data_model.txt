@@ -1,0 +1,94 @@
+host.erl
+Methods:
+
+Id :Hostname
+create_table() -> ok|{error,Reason}
+create_instance([{local_ip,Ip},{ssh_port,Port},{uid,Uid},{passwd,Pwd},{application_config,AppConig}],Hostname)->ok|{error,Reason}
+
+create(HostName),
+delete(HostName),
+
+set_ip(Ip,Hostname),
+set_port(Port,Hostname),
+set_uid(Uid,Hostname),
+set_passwd(Passwd,Hostname),
+set_appl_config(ApplConfig,Hostname),
+
+get_ip(Hostname),
+get_port(Hostname),
+get_uid(Hostname),
+get_passwd(Hostname),
+get_appl_config(Hostname),
+
+
+get_hostname_ip(Ip),
+get_hostname_user(User),
+
+-record(host_spec,{
+		 spec_id,
+		 hostname,
+		 local_ip,
+		 ssh_port,
+		 uid,
+		 passwd,
+		 application_config,
+		 connect_node_name,
+		 connect_node
+		}).
+
+
+-record(cluster_spec,{
+		 spec_id,
+		 deployment_spec,
+		 cookie_str
+		}).
+
+
+-record(provider_spec,{
+		 spec,
+		 appl_name,
+		 vsn,
+		 app_name,
+		 app,
+		 dir,
+		 node_name,
+		 cookie,
+		 pa_args,
+		 tar_file,
+		 git_path,
+		 tar_cmd,
+		 start_cmd,
+		 num,
+		 affinity	
+		}).
+
+
+-record(cluster,{
+		 spec_id,
+		 cluster_spec
+		}).
+
+
+-record(deployment_spec,{
+		 spec,
+		 deployment
+		}).
+
+-record(deploy,{
+		 id,
+		 deployment_spec,
+		 provider_spec,
+		 node_name,
+		 dir,
+		 node,
+		 host_spec,
+		 creation_time
+		}).
+
+
+-record(lock,{
+		 lock_id,
+		 transaction_id,
+		 time,
+		 status
+		}).

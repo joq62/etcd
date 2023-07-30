@@ -4,19 +4,20 @@
 %%%
 %%% @end
 %%% Created : 21 Dec 2022 by c50 <joq62@c50>
-
--module(db_deployment_spec).
+-module(lib_db_host).
 
 %% --------------------------------------------------------------------
 %% Include files
 %% --------------------------------------------------------------------
+-import(lists, [foreach/2]).
 -include_lib("stdlib/include/qlc.hrl").
--include("db_deployment_spec.hrl").
+-include("db_host.hrl").
 
 %% External exports
+
 -export([create_table/0,create_table/2,add_node/2]).
--export([create/1,create/2,delete/1]).
--export([read_all/0,read/1,read/2,get_all_id/0]).
+-export([create/1,delete/1]).
+-export([get_info/1,get_all/0,get/2,get_all_id/0]).
 -export([do/1]).
 -export([member/1]).
 -export([git_clone_load/0]).
@@ -28,7 +29,8 @@
 %%--------------------------------------------------------------------
 
 create_table()->
-    mnesia:create_table(?TABLE, [{attributes, record_info(fields, ?RECORD)}
+    mnesia:create_table(?TABLE, [{attributes, record_info(fields, ?RECORD)},
+				 {type,set}
 				]),
     mnesia:wait_for_tables([?TABLE], 20000).
 
@@ -36,7 +38,6 @@ create_table(NodeList,StorageType)->
     mnesia:create_table(?TABLE, [{attributes, record_info(fields, ?RECORD)},
 				 {StorageType,NodeList}]),
     mnesia:wait_for_tables([?TABLE], 20000).
-
 %%--------------------------------------------------------------------
 %% @doc
 %% @spec
@@ -54,42 +55,57 @@ add_node(Node,StorageType)->
 		   Reason
 	   end,
     Result.
-
 %%--------------------------------------------------------------------
 %% @doc
 %% @spec
 %% @end
 %%--------------------------------------------------------------------
-create(SpecId,Deployment)->
- Record=#?RECORD{
-		 spec=SpecId,
-		 deployment=Deployment
-		},
-    create(Record).
-
-create(Record)->
+create(HostName)->
+    Record=#?RECORD{
+		    hostname=HostName,
+		    ip=undefined,
+		    ssh_port=undefined,
+		    user=undefined,
+		    passwd=undefined,
+		    application_config=undefined
+		   },
     F = fun() -> mnesia:write(Record) end,
     mnesia:transaction(F).
 
+create(HostName,Ip,SshPort,User,Passwd,ApplConfig)->
+    Record=#?RECORD{
+		    hostname=HostName,
+		    ip=Ip,
+		    ssh_port=SshPort,
+		    user=User,
+		    passwd=Passwd,
+		    application_config=ApplConfig
+		   },
+    F = fun() -> mnesia:write(Record) end,
+    mnesia:transaction(F).
+
+
 %%--------------------------------------------------------------------
 %% @doc
 %% @spec
 %% @end
 %%--------------------------------------------------------------------
-delete(Spec) ->
-    F = fun() ->
-                mnesia:delete({?TABLE,Spec})
 
-        end,
+delete(HostName) ->
+    F = fun() -> 
+		mnesia:delete({?TABLE,HostName})
+		    
+	end,
     mnesia:transaction(F).
 %%--------------------------------------------------------------------
 %% @doc
 %% @spec
 %% @end
 %%--------------------------------------------------------------------
-member(SpecId)->
+
+member(HostName)->
     Z=do(qlc:q([X || X <- mnesia:table(?TABLE),		
-		     X#?RECORD.spec==SpecId])),
+		     X#?RECORD.hostname==HostName])),
     Member=case Z of
 	       []->
 		   false;
@@ -104,18 +120,47 @@ member(SpecId)->
 %% @end
 %%--------------------------------------------------------------------
 
-read(Key,Spec)->
+get_all() ->
+    Z=do(qlc:q([X || X <- mnesia:table(?TABLE)])),
+    [{R#?RECORD.hostname,R#?RECORD.ip,R#?RECORD.ssh_port,
+      R#?RECORD.user,R#?RECORD.passwd,R#?RECORD.application_config}||R<-Z].
+
+get_info(HostName)->
     Z=do(qlc:q([X || X <- mnesia:table(?TABLE),		
-		     X#?RECORD.spec==Spec])),
+		     X#?RECORD.hostname==HostName])),
     Result=case Z of
 	       []->
-		   {error,[eexist,Spec,?MODULE,?LINE]};
-	       [R]->
+		  [];
+	       _->
+		   [Info]=[{R#?RECORD.hostname,R#?RECORD.ip,
+			    R#?RECORD.ssh_port,R#?RECORD.user,R#?RECORD.passwd,
+			    R#?RECORD.application_config}||R<-Z],
+		   Info
+	   end,
+    Result.
+
+get(Key,HostName)->
+    Z=do(qlc:q([X || X <- mnesia:table(?TABLE),		
+		     X#?RECORD.hostname==HostName])),
+    Result=case Z of
+	       []->
+		   {error,[eexist,HostName,?MODULE,?LINE]};
+	       [R] ->
 		   case  Key of
-		       deployment->
-			   {ok,R#?RECORD.deployment};
-		       Key ->
-			   {error,['Key eexists',Key,Spec,?MODULE,?LINE]}
+		       hostname->
+			   {ok,R#?RECORD.hostname};
+		       ip->
+			   {ok,R#?RECORD.ip};
+		       port->
+			   {ok,R#?RECORD.ssh_port};
+		       user->
+			   {ok,R#?RECORD.user};
+		       passwd->
+			   {ok,R#?RECORD.passwd};
+		       application_config->
+			   {ok,R#?RECORD.application_config};
+		       Err ->
+			   {error,['Key eexists',Err,HostName,?MODULE,?LINE]}
 		   end
 	   end,
     Result.
@@ -123,25 +168,8 @@ read(Key,Spec)->
 
 get_all_id()->
     Z=do(qlc:q([X || X <- mnesia:table(?TABLE)])),
-    [R#?RECORD.spec||R<-Z].
+    [R#?RECORD.hostname||R<-Z].
     
-read_all() ->
-    Z=do(qlc:q([X || X <- mnesia:table(?TABLE)])),
-    [{R#?RECORD.spec,R#?RECORD.deployment
-     }||R<-Z].
-
-read(Spec)->
-    Z=do(qlc:q([X || X <- mnesia:table(?TABLE),		
-		     X#?RECORD.spec==Spec])),
-    Result=case Z of
-	       []->
-		  [];
-	       _->
-		   [Info]=[{R#?RECORD.spec,R#?RECORD.deployment
-			   }||R<-Z],
-		   Info
-	   end,
-    Result.
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -167,6 +195,7 @@ do(Q) ->
 %% @spec
 %% @end
 %%--------------------------------------------------------------------
+
 git_clone_load()->
     ok=create_table(),
     Result=case git_clone() of
@@ -175,12 +204,10 @@ git_clone_load()->
 	       {ok,TempDirName,SpecDir}->
 		   case from_file(SpecDir) of
 		       {error,Reason}->
-			   file:del_dir_r(TempDirName),    
-	%		   os:cmd("rm -rf "++TempDirName),	
+			   os:cmd("rm -rf "++TempDirName),	
 			   {error,Reason};
 		       LoadResult->
-			   file:del_dir_r(TempDirName),    
-			 %  os:cmd("rm -rf "++TempDirName),	
+			   os:cmd("rm -rf "++TempDirName),	
 			   LoadResult
 		   end
 	   end,
@@ -194,9 +221,9 @@ git_clone_load()->
 git_clone()->
     TempDirName=erlang:integer_to_list(os:system_time(microsecond),36)++".dir",
     ok=file:make_dir(TempDirName),
-    GitDir=filename:join(TempDirName,?SpecDir),
-    GitPath=?GitPathSpecs,
-    file:del_dir_r(GitDir),    
+    GitDir=filename:join(TempDirName,?HostSpecDir),
+    GitPath=?GitPathHostSpecs,
+    os:cmd("rm -rf "++GitDir),    
     ok=file:make_dir(GitDir),
     GitResult=cmn_appl:git_clone_to_dir(node(),GitPath,GitDir),
     Result=case filelib:is_dir(GitDir) of
@@ -213,36 +240,36 @@ git_clone()->
 %% @end
 %%--------------------------------------------------------------------
 
-from_file(SpecDir)->
-    {ok,FileNames}=file:list_dir(SpecDir),
- %   io:format("FileNames  ~p~n",[{FileNames,?MODULE,?FUNCTION_NAME,?LINE}]),
-    from_file(FileNames,SpecDir,[]).
+from_file(ApplSpecDir)->
+    {ok,FileNames}=file:list_dir(ApplSpecDir),
+    from_file(FileNames,ApplSpecDir,[]).
 
 from_file([],_,Acc)->
     Acc;		     
 from_file([FileName|T],Dir,Acc)->
-    FullFileName=filename:join(Dir,FileName),
-  %  io:format("FullFileName  ~p~n",[{FullFileName,?MODULE,?FUNCTION_NAME,?LINE}]),
-    NewAcc=case file:consult(FullFileName) of
-	       {error,Reason}->
-%		   io:format("error,Reason  ~p~n",[{error,Reason,?MODULE,?FUNCTION_NAME,?LINE}]),
-		   [{error,[Reason,FileName,Dir,?MODULE,?LINE]}|Acc];
-	       {ok,[{deployment_spec,SpecId,Info}]}->		   
-		   Record=#?RECORD{
-				   spec=SpecId,
-				   deployment=Info
-				   },
-
-		   %io:format("Record  ~p~n",[{Record,?MODULE,?LINE}]),
-		   case create(Record) of
-		       {atomic,ok}->
-			   [{ok,FileName}|Acc];
-		       {error,Reason}->
-			   [{error,[Reason,FileName,Dir,?MODULE,?LINE]}|Acc]
+    NewAcc=case filename:extension(FileName) of
+	       ?Extension->
+		   FullFileName=filename:join(Dir,FileName),
+		   case file:consult(FullFileName) of
+			{error,Reason}->
+			    [{error,[Reason,FileName,Dir,?MODULE,?LINE]}|Acc];
+			{ok,[{host_spec,Info}]}->
+			    {hostname,HostName}=lists:keyfind(hostname,1,Info),
+			    {ip,Ip}=lists:keyfind(ip,1,Info),
+			    {ssh_port,SshPort}=lists:keyfind(ssh_port,1,Info),
+			    {user,User}=lists:keyfind(user,1,Info),
+			    {passwd,Passwd}=lists:keyfind(passwd,1,Info),
+			    {application_config,ApplConfig}=lists:keyfind(application_config,1,Info),
+			    case create(HostName,Ip,SshPort,User,Passwd,ApplConfig) of
+				{atomic,ok}->
+				    [{ok,FileName}|Acc];
+				{error,Reason}->
+				    [{error,[Reason,FileName,Dir,?MODULE,?LINE]}|Acc]
+			    end
 		   end;
-	       {ok,NotAnApplSpecFile} -> 
-		   io:format("NotAnApplSpecFile  ~p~n",[{NotAnApplSpecFile,?MODULE,?FUNCTION_NAME,?LINE}]),
-		   [{error,[not_appl_spec_file,NotAnApplSpecFile,FileName,Dir,?MODULE,?LINE]}|Acc]
+	       _ -> 
+		   Acc
+		   %[{error,[not_appl_spec_file,NotAnApplSpecFile,FileName,Dir,?MODULE,?LINE]}|Acc]
 	   end,
     from_file(T,Dir,NewAcc).
 			   

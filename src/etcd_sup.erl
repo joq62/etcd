@@ -31,7 +31,11 @@ init([]) ->
                  period => 1},
     ChildSpecs = [
 		  #{id=>etcd,
-		    start=>{etcd,start_link,[]}}
+		    start=>{etcd,start_link,[]}},
+		  #{id=>etcd_host,
+		    start=>{etcd_host,start_link,[]}},
+		  #{id=>etcd_provider,
+		    start=>{etcd_provider,start_link,[]}}
 		 ],
     {ok, {SupFlags, ChildSpecs}}.
 

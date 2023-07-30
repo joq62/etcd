@@ -1,0 +1,11 @@
+{host_spec,"c50",
+ [{hostname,"c50"},
+   {local_ip,"172.26.158.249"},
+   {ssh_port,22},
+   {uid,"joq62"},
+   {passwd,"festum01"},
+   {application_config,[]},
+   {connect_node_name,"host_controller"},
+   {connect_node,'host_controller@c50'}
+ ]
+}.

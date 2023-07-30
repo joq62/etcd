@@ -2,6 +2,6 @@
 -define(TABLE,cluster).
 -define(RECORD,?TABLE).
 -record(?RECORD,{
-		 spec_id,
+		 create_node,
 		 cluster_spec
 		}).

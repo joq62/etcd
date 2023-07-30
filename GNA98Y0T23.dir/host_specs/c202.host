@@ -1,0 +1,9 @@
+{host_spec,
+ [{hostname,"c202"},
+   {ip,"192.168.1.202"},
+   {ssh_port,22},
+   {user,"ubuntu"},
+   {passwd,"festum01"},
+   {application_config,[]}
+ ]
+}.
