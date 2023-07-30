@@ -4,14 +4,14 @@
 %%% 
 %%% Created : 10 dec 2012
 %%% -------------------------------------------------------------------
--module(deployment_test).   
+-module(etcd_deployment_test).   
    
 %% --------------------------------------------------------------------
 %% Include files
 %% --------------------------------------------------------------------
 
 %% --------------------------------------------------------------------
-
+-define(TestDeployment,"test_c50").
 %% External exports
 -export([start/0]).
 
@@ -45,26 +45,26 @@ start()->
 read_specs_test()->
     io:format("Start ~p~n",[{?MODULE,?FUNCTION_NAME}]),
     
-    AllDepSpecs=lists:sort(db_deployment_spec:get_all_id()),
-    true=lists:member("test",AllDepSpecs),
+    AllDepSpecs=lists:sort(etcd_deployment:all_deployments()),
+    true=lists:member(?TestDeployment,AllDepSpecs),
     
-    {"test",
-     [{"dbetcd_appl","c50"},{"dbetcd_appl","c50"},{"adder","c50"},{"adder","c50"},{"adder","c50"},
-      {"divi","c50"},
-      {"test_appl","c50"},{"test_appl","c50"}
+    {
+     "test_c50",
+     [
+      {"control","c50"},{"etcd","c50"},
+      {"adder","c50"},{"divi","c50"}
      ]
-    }=db_deployment_spec:read("test"),
+    }=etcd_deployment:get_info(?TestDeployment),
     
     {ok,
      [
-      {"dbetcd_appl","c50"},{"dbetcd_appl","c50"},{"adder","c50"},{"adder","c50"},{"adder","c50"},
-      {"divi","c50"},
-      {"test_appl","c50"},{"test_appl","c50"}
+      {"control","c50"},{"etcd","c50"},
+      {"adder","c50"},{"divi","c50"}
      ]
-    }=db_deployment_spec:read(deployment,"test"),
+    }=etcd_deployment:get_deployment_list(?TestDeployment),
     
-    {error,[eexist,"glurk",db_deployment_spec,_]}=db_deployment_spec:read(deployment,"glurk"),
-    {error,['Key eexists',glurk,"test",db_deployment_spec,_]}=db_deployment_spec:read(glurk,"test"),
+    {error,[eexist,"glurk",lib_etcd_deployment,_]}=etcd_deployment:get_deployment_list("glurk"),
+    
  
     ok. 
 %% --------------------------------------------------------------------

@@ -1,10 +1,11 @@
 -define(SpecDir,"deployments").
 -define(GitPathSpecs,"https://github.com/joq62/deployments.git").
+-define(Extension,".deployment").
 
--define(TABLE,deployment_spec).
--define(RECORD,deployment_spec).
+-define(TABLE,deployment).
+-define(RECORD,deployment).
 
 -record(?RECORD,{
-		 spec,
-		 deployment
+		 name,
+		 deployment_list
 		}).

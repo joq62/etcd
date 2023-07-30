@@ -31,6 +31,7 @@ start()->
     ok=etcd_host_test:start(node()),
     ok=etcd_provider_test:start(node()),
     ok=etcd_lock_test:start(node()),
+    ok=etcd_deployment_test:start(),
 %    ok=cluster_test:start(),
 %    ok=cluster_spec_test:start(),
 %    ok=deploy_test:start(),
