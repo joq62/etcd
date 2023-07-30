@@ -21,16 +21,7 @@
 %% API
 
 -export([
-	 create/1,
-	 create/2,
-	 all_locks/0,
-	 get_info/1,
-	 
-	 try_lock/1,
-	 try_lock/2,
-	 unlock/2,
-	 is_open/1,
-	 is_open/2,
+	 create_records/1,
 	 
 	 ping/0,
 	 stop/0
@@ -52,91 +43,13 @@
 
 %%--------------------------------------------------------------------
 %% @doc
-%% Creates a new instance 
+%% Creates  to take lead by locking 
 %% @end
 %%--------------------------------------------------------------------
--spec create(LockId :: atom()) -> ok | {error, Error :: term()}.
+-spec create_records(ClusterSpec :: string()) -> {ok,DeploymentRecords :: term()} | {error, Error :: term()}.
 
-create(LockId)->
-    create(LockId,0).
-%%--------------------------------------------------------------------
-%% @doc
-%% Creates a new instance 
-%% @end
-%%--------------------------------------------------------------------
--spec create(Lock :: atom(),Time :: integer()) -> ok | {error, Error :: term()}.
-create(Lock,Time)->
-    gen_server:call(?SERVER, {create,Lock,Time},infinity).
-    
-%%--------------------------------------------------------------------
-%% @doc
-%% get all locks name that are stored in dbase
-%% @end
-%%--------------------------------------------------------------------
--spec all_locks() -> ListOfLocks :: term().
-
-all_locks()->
-    gen_server:call(?SERVER, {all_locks},infinity).
-    
-
-%%--------------------------------------------------------------------
-%% @doc
-%% Get all information related to lock Lock 
-%% @end
-%%--------------------------------------------------------------------
--spec get_info(Lock :: atom()) -> {ok,LockInfo :: term()} | {error, Error :: term()}.
-
-get_info(Lock)->
-    gen_server:call(?SERVER, {get_info,Lock},infinity).
-
-
-%%--------------------------------------------------------------------
-%% @doc
-%% Tries to take lead by locking 
-%% @end
-%%--------------------------------------------------------------------
--spec try_lock(Lock :: atom()) -> {ok,Transaction :: integer()} | locked | {error, Error :: term()}.
-
-try_lock(Lock)->
-    gen_server:call(?SERVER, {try_lock,Lock},infinity).
-%%--------------------------------------------------------------------
-%% @doc
-%% Tries to take lead by locking 
-%% @end
-%%--------------------------------------------------------------------
--spec try_lock(Lock :: atom(), LockTimeOut :: integer()) -> {ok,Transaction :: integer()} | locked | {error, Error :: term()}.
-
-try_lock(Lock,LockTimeOut)->
-    gen_server:call(?SERVER, {try_lock,Lock,LockTimeOut},infinity).
-
-%%--------------------------------------------------------------------
-%% @doc
-%% unlock 
-%% @end
-%%--------------------------------------------------------------------
--spec unlock(Lock :: atom(), Transaction :: integer()) -> ok | {error, Error :: term()}.
-
-unlock(Lock,Transaction)->
-    gen_server:call(?SERVER, {unlock,Lock,Transaction},infinity).
-
-%%--------------------------------------------------------------------
-%% @doc
-%% Check if lock is open or locked 
-%% @end
-%%--------------------------------------------------------------------
--spec is_open(Lock :: atom()) -> true | false | {error, Error :: term()}.
-
-is_open(Lock)->
-    gen_server:call(?SERVER, {is_open,Lock},infinity).
-%%--------------------------------------------------------------------
-%% @doc
-%% Check if lock is open or locked 
-%% @end
-%%--------------------------------------------------------------------
--spec is_open(Lock :: atom(),LockTimeOut :: integer()) -> true | false  | {error, Error :: term()}.
-
-is_open(Lock,LockTimeOut)->
-    gen_server:call(?SERVER, {is_open,Lock,LockTimeOut},infinity).
+create_records(ClusterSpec)->
+    gen_server:call(?SERVER, {create_records,ClusterSpec},infinity).
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -188,39 +101,21 @@ init([]) ->
 %% @spec
 %% @end
 %%--------------------------------------------------------------------
-handle_call({all_locks}, _From, State) ->
-    Reply=lib_etcd_lock:get_all_id(),
+handle_call({create_records,ClusterSpec}, _From, State) ->
+    {ok,CookieStr}=etcd_cluster:get_cookie_str(ClusterSpec),
+    {ok,DeploymentSpec}=etcd_cluster:get_deployment_spec(ClusterSpec),
+    {ok,DeploymentList}=etcd_deployment:get_deployment_list(DeploymentSpec),
+    SortedDeploymentLis=lists:sort(DeploymentList),
+    Num=length(SortedDeploymentLis),
+    DeploymentRecords=create_records(SortedDeploymentLis,Num,CookieStr,[]),
+   % io:format("DeploymentRecords ~p~n",[{DeploymentRecords,?MODULE,?LINE}]),
+    Reply=case etcd_cluster:set_deployment_records(DeploymentRecords,ClusterSpec) of
+	      ok->
+		  {ok,DeploymentRecords};
+	      Error->
+		  Error
+	  end,
     {reply, Reply, State};
-
-handle_call({get_info,Lock}, _From, State) ->
-    Reply=lib_etcd_lock:get_info(Lock),
-    {reply, Reply, State};
-
-handle_call({try_lock,Lock}, _From, State) ->
-    Reply=lib_etcd_lock:try_lock(Lock),
-    {reply, Reply, State};
-
-handle_call({try_lock,Lock,LockTimeOut}, _From, State) ->
-    Reply=lib_etcd_lock:try_lock(Lock,LockTimeOut),
-    {reply, Reply, State};
-
-handle_call({is_open,Lock}, _From, State) ->
-    Reply=lib_etcd_lock:is_open(Lock),
-    {reply, Reply, State};
-
-handle_call({unlock,Lock,Transaction}, _From, State) ->
-    Reply=lib_etcd_lock:unlock(Lock,Transaction),
-    {reply, Reply, State};
-
-handle_call({create,Lock}, _From, State) ->
-    Reply=lib_etcd_lock:create(Lock),
-    {reply, Reply, State};
-
-handle_call({create,Lock,Time}, _From, State) ->
-    Reply=lib_etcd_lock:create(Lock,Time),
-    {reply, Reply, State};
-
-
 
 handle_call({ping}, _From, State) ->
     Reply=pong,
@@ -300,17 +195,6 @@ format_status(_Opt, Status) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
-create_records(ClusterSpec)->
-    {ok,CookieStr}=etcd_cluster:get_cookie_str(ClusterSpec),
-    {ok,DeploymentSpec}=etcd_cluster:get_deployment_spec(ClusterSpec),
-    {ok,DeploymentList}=etcd_deployment:get_deployment_list(DeploymentSpec),
-    SortedDeploymentLis=lists:sort(DeploymentList),
-    Num=length(SortedDeploymentLis),
-    DeploymentRecords=create_records(SortedDeploymentLis,Num,CookieStr,[]),
-    
-    DeploymentRecords.
-
-
 
 create_records([],_Num,_CookieStr,Acc)->
     Acc;

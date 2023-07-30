@@ -106,8 +106,8 @@ get_deployment_spec(ClusterName)->
 %%--------------------------------------------------------------------
 -spec set_deployment_records(ClusterName :: string(),DeploymentRecords :: term()) -> ok | {error, Error :: term()}.
 
-set_deployment_records(ClusterName,DeploymentRecords)->
-    gen_server:call(?SERVER, {set_deployment_records,ClusterName,DeploymentRecords},infinity).
+set_deployment_records(DeploymentRecords,ClusterName)->
+    gen_server:call(?SERVER, {set_deployment_records,DeploymentRecords,ClusterName},infinity).
     
 %%--------------------------------------------------------------------
 %% @doc
@@ -194,8 +194,8 @@ handle_call({get_deployment_spec,ClusterName}, _From, State) ->
     Reply=lib_etcd_cluster:get(deployment_spec,ClusterName),
     {reply, Reply, State};
 
-handle_call({set_deployment_records,ClusterName,DeploymentRecords}, _From, State) ->
-    Reply=lib_etcd_cluster:set_deployment_records(DeploymentRecords,ClusterName),
+handle_call({set_deployment_records,DeploymentRecords,ClusterName}, _From, State) ->
+    Reply=lib_etcd_cluster:set(deployment_records,DeploymentRecords,ClusterName),
     {reply, Reply, State};
 
 handle_call({get_deployment_records,ClusterName}, _From, State) ->

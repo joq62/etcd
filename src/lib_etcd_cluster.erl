@@ -169,24 +169,28 @@ get_all_id()->
     [R#?RECORD.name||R<-Z].
     
 set(Key,Value,ClusterName)->
-    Z=do(qlc:q([X || X <- mnesia:table(?TABLE),		
-		     X#?RECORD.name==ClusterName])),
-    Result=case Z of
-	       []->
-		   {error,[eexist,ClusterName,?MODULE,?LINE]};
+  F = fun() -> 
+	      Z=do(qlc:q([X || X <- mnesia:table(?TABLE),		
+			       X#?RECORD.name==ClusterName])),
+	      case Z of
+		  []->
+		      mnesia:abort({error,[eexist,ClusterName,?MODULE,?LINE]});
 	       [R] ->
-		   case Key of
-		       deployment_records->
-			   R1=R#?RECORD{deployment_records=Value},
-			   case mnesia:write(R1) of
-			       {atomic,ok}->
-				   ok;
-			       Reason->
-				   {error,[Reason,?MODULE,?LINE]}
-			   end
-		   end			   
-	   end,
-    Result.
+		      case Key of
+			  deployment_records->
+			      R1=R#?RECORD{deployment_records=Value},
+			      mnesia:write(R1);
+			  Reason ->
+			      mnesia:abort({error,["Key eexists ",Reason,?MODULE,?LINE]})
+		      end			   
+	      end
+      end,
+    case mnesia:transaction(F) of
+	{atomic, Val} ->
+	    Val;
+	{aborted,Reason}->
+	    Reason
+    end.
     
 %%--------------------------------------------------------------------
 %% @doc

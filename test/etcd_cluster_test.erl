@@ -28,7 +28,7 @@ start()->
     Node=node(),
     ok=setup(Node),
     ok=read_specs_test(Node),
-    ok=crudo_test(Node),
+    ok=create_record_test(Node),
   
     io:format("Stop OK !!! ~p~n",[{?MODULE,?FUNCTION_NAME}]),
 
@@ -40,10 +40,12 @@ start()->
 %% Description: Based on hosts.config file checks which hosts are avaible
 %% Returns: List({HostId,Ip,SshPort,Uid,Pwd}
 %% --------------------------------------------------------------------
-crudo_test(Node)->
+create_record_test(Node)->
     io:format("Start ~p~n",[{?MODULE,?FUNCTION_NAME}]),
-   
     
+    {ok,DeploymentRecords}=etcd_deployment_record:create_records(?ClusterNameTest),
+    {ok,L}=rpc:call(Node,etcd_cluster,get_deployment_records,[?ClusterNameTest],5000),
+    DeploymentRecords=L,
     ok.
 
 %% --------------------------------------------------------------------
@@ -55,15 +57,13 @@ read_specs_test(Node)->
     io:format("Start ~p~n",[{?MODULE,?FUNCTION_NAME}]),
     
     AllHosts=lists:sort(rpc:call(Node,etcd_cluster,all_clusters,[],5000)),
-    true=lists:member( ?ClusterNameTest,AllHosts),
-
+    true=lists:member(?ClusterNameTest,AllHosts),
+    
     {"test_c50_1","a","test_c50",[]}=rpc:call(Node,etcd_cluster,get_info,[?ClusterNameTest],5000),
     
     {ok,"a"}=rpc:call(Node,etcd_cluster,get_cookie_str,[?ClusterNameTest],5000),
     {ok,"test_c50"}=rpc:call(Node,etcd_cluster,get_deployment_spec,[?ClusterNameTest],5000),
     {ok,[]}=rpc:call(Node,etcd_cluster,get_deployment_records,[?ClusterNameTest],5000),
-       
-
     {error,[eexist,"glurk",lib_etcd_cluster,_]}=rpc:call(Node,etcd_cluster,get_cookie_str,["glurk"],5000),
  
     ok.
