@@ -52,10 +52,10 @@ create_record_test(Node)->
     Num=length(DeploymentList),
     4=Num,
     [
-     {deployment_record,"a_1",'a_1@c50',"a_1","divi","c50"},
-     {deployment_record,"a_2",'a_2@c50',"a_2","adder","c50"},
-     {deployment_record,"a_3",'a_3@c50',"a_3","etcd","c50"},
-     {deployment_record,"a_4",'a_4@c50',"a_4","control","c50"}
+     {deployment_record,"a_1",'a_1@c50',divi,"a_1","divi","c50"},
+     {deployment_record,"a_2",'a_2@c50',adder,"a_2","adder","c50"},
+     {deployment_record,"a_3",'a_3@c50',etcd,"a_3","etcd","c50"},
+     {deployment_record,"a_4",'a_4@c50',control,"a_4","control","c50"}
     ]=create_records(DeploymentList,Num,CookieStr,[]),
     ok.
 
@@ -65,6 +65,7 @@ create_records([{Provider,Host}|T],N,CookieStr,Acc) ->
     %NodeName= "CookieStr_N"
     % Node NodeName@HostName
     % Dir =NodeName
+    {ok,App}=etcd_provider:get_app(Provider),
     NStr=integer_to_list(N),
     NodeName=CookieStr++"_"++NStr,
     Node=list_to_atom(NodeName++"@"++Host),
@@ -72,6 +73,7 @@ create_records([{Provider,Host}|T],N,CookieStr,Acc) ->
                          node=Node,
 			 dir=NodeName,
 			 provider=Provider,
+			 app=App,
 			 host=Host},
     create_records(T,N-1,CookieStr,[R|Acc]).
     

@@ -207,7 +207,7 @@ handle_call({is_open,Lock}, _From, State) ->
     Reply=lib_etcd_lock:is_open(Lock),
     {reply, Reply, State};
 
-handle_call({try_lock,Lock,LockTimeOut}, _From, State) ->
+handle_call({is_open,Lock,LockTimeOut}, _From, State) ->
     Reply=lib_etcd_lock:is_open(Lock,LockTimeOut),
     {reply, Reply, State};
 

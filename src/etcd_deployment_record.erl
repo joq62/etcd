@@ -15,6 +15,7 @@
 %%--------------------------------------------------------------------
 
 -include("log.api").
+-include("etcd_cluster.hrl").
  
 
 %% API
@@ -207,11 +208,6 @@ handle_call({is_open,Lock}, _From, State) ->
     Reply=lib_etcd_lock:is_open(Lock),
     {reply, Reply, State};
 
-handle_call({try_lock,Lock,LockTimeOut}, _From, State) ->
-    Reply=lib_etcd_lock:is_open(Lock,LockTimeOut),
-    {reply, Reply, State};
-
-
 handle_call({unlock,Lock,Transaction}, _From, State) ->
     Reply=lib_etcd_lock:unlock(Lock,Transaction),
     {reply, Reply, State};
@@ -304,4 +300,25 @@ format_status(_Opt, Status) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
+create_records(ClusterSpec)->
+    {ok,CookieStr}=etcd_cluster:get_cookie_str(ClusterSpec),
+    {ok,DeploymentSpec}=etcd_cluster:get_deployment_spec(ClusterSpec),
+    {ok,DeploymentList}=etcd_deployment:get_deployment_list(DeploymentSpec),
+    SortedDeploymentLis=lists:sort(DeploymentList),
+    Num=length(SortedDeploymentLis),
+    create_records(SortedDeploymentLis,Num,CookieStr,[]).
 
+create_records([],_Num,_CookieStr,Acc)->
+    Acc;
+create_records([{Provider,Host}|T],N,CookieStr,Acc) ->
+  %  etcd_provider:get_app(
+    NStr=integer_to_list(N),
+    NodeName=CookieStr++"_"++NStr,
+    Node=list_to_atom(NodeName++"@"++Host),
+    R=#deployment_record{node_name=NodeName,
+                         node=Node,
+			 dir=NodeName,
+			 provider=Provider,
+			 host=Host},
+    create_records(T,N-1,CookieStr,[R|Acc]).
+    

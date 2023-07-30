@@ -7,6 +7,7 @@
 -record(deployment_record,{
 			   node_name,
 			   node,
+			   app,
 			   dir,
 			   provider,
 			   host
