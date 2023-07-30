@@ -69,7 +69,7 @@ read_specs_test(Node)->
     {ok,"https://github.com/joq62/adder.git"}=rpc:call(Node,etcd_provider,get_git_path,[?ProviderNameTest],5000),
       
 
-    {error,[eexist,"glurk",lib_provider,_]}=rpc:call(Node,etcd_provider,get_vsn,["glurk"],5000),
+    {error,[eexist,"glurk",lib_etcd_provider,_]}=rpc:call(Node,etcd_provider,get_vsn,["glurk"],5000),
  
     ok.
 

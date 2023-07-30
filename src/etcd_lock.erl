@@ -6,8 +6,8 @@
 %%% @end
 %%% Created : 18 Apr 2023 by c50 <joq62@c50>
 %%%-------------------------------------------------------------------
--module(etcd_provider).
- 
+-module(etcd_lock).
+
 -behaviour(gen_server).
 %%--------------------------------------------------------------------
 %% Include 
@@ -21,19 +21,16 @@
 
 -export([
 	 create/1,
-	 all_providers/0,
+	 create/2,
+	 all_locks/0,
 	 get_info/1,
 	 
-	 get_vsn/1,
-	 set_vsn/2,
-	 get_app/1,
-	 set_app/2,
-
-	 get_erl_args/1,
-	 set_erl_args/2,
-	 get_git_path/1,
-	 set_git_path/2,
-
+	 try_lock/1,
+	 try_lock/2,
+	 unlock/2,
+	 is_open/1,
+	 is_open/2,
+	 
 	 ping/0,
 	 stop/0
 	]).
@@ -51,119 +48,95 @@
 %%%===================================================================
 %%% API
 %%%===================================================================
+
 %%--------------------------------------------------------------------
 %% @doc
-%% get all providers that are stored in dbase
+%% Creates a new instance 
 %% @end
 %%--------------------------------------------------------------------
--spec all_providers() -> ListOfProvidersApplName :: term().
+-spec create(LockId :: atom()) -> ok | {error, Error :: term()}.
 
-all_providers()->
-    gen_server:call(?SERVER, {all_providers},infinity).
+create(LockId)->
+    create(LockId,0).
+%%--------------------------------------------------------------------
+%% @doc
+%% Creates a new instance 
+%% @end
+%%--------------------------------------------------------------------
+-spec create(Lock :: atom(),Time :: integer()) -> ok | {error, Error :: term()}.
+create(Lock,Time)->
+    gen_server:call(?SERVER, {create,Lock,Time},infinity).
+    
+%%--------------------------------------------------------------------
+%% @doc
+%% get all locks name that are stored in dbase
+%% @end
+%%--------------------------------------------------------------------
+-spec all_locks() -> ListOfLocks :: term().
+
+all_locks()->
+    gen_server:call(?SERVER, {all_locks},infinity).
     
 
 %%--------------------------------------------------------------------
 %% @doc
-%% Get all information related to provider ApplName 
+%% Get all information related to lock Lock 
 %% @end
 %%--------------------------------------------------------------------
--spec get_info(ApplName :: string()) -> {ok,ProviderInfo :: term()} | {error, Error :: term()}.
+-spec get_info(Lock :: atom()) -> {ok,LockInfo :: term()} | {error, Error :: term()}.
 
-get_info(ApplName)->
-    gen_server:call(?SERVER, {get_info,ApplName},infinity).
+get_info(Lock)->
+    gen_server:call(?SERVER, {get_info,Lock},infinity).
 
 
 %%--------------------------------------------------------------------
 %% @doc
-%% Creates a new instance with undefined data 
+%% Tries to take lead by locking 
 %% @end
 %%--------------------------------------------------------------------
--spec create(ApplName :: string()) -> ok | {error, Error :: term()}.
+-spec try_lock(Lock :: atom()) -> {ok,Transaction :: integer()} | locked | {error, Error :: term()}.
 
-create(ApplName)->
-    gen_server:call(?SERVER, {create,ApplName},infinity).
-    
+try_lock(Lock)->
+    gen_server:call(?SERVER, {try_lock,Lock},infinity).
+%%--------------------------------------------------------------------
+%% @doc
+%% Tries to take lead by locking 
+%% @end
+%%--------------------------------------------------------------------
+-spec try_lock(Lock :: atom(), LockTimeOut :: integer()) -> {ok,Transaction :: integer()} | locked | {error, Error :: term()}.
+
+try_lock(Lock,LockTimeOut)->
+    gen_server:call(?SERVER, {try_lock,Lock,LockTimeOut},infinity).
 
 %%--------------------------------------------------------------------
 %% @doc
-%% set vsn Vsn for provider ApplName
+%% unlock 
 %% @end
 %%--------------------------------------------------------------------
--spec set_vsn(Vsn :: string(), ApplName :: string()) -> ok | {error, Error :: term()}.
+-spec unlock(Lock :: atom(), Transaction :: integer()) -> ok | {error, Error :: term()}.
 
-set_vsn(Vsn,ApplName)->
-    gen_server:call(?SERVER, {set_vsn,Vsn,ApplName},infinity).
-    
-%%--------------------------------------------------------------------
-%% @doc
-%% get vsn for provider ApplName
-%% @end
-%%--------------------------------------------------------------------
--spec get_vsn(ApplName :: string()) -> {ok,Vsn :: string()} | {error, Error :: term()}.
-
-get_vsn(ApplName)->
-    gen_server:call(?SERVER, {get_vsn,ApplName},infinity).
+unlock(Lock,Transaction)->
+    gen_server:call(?SERVER, {unlock,Lock,Transaction},infinity).
 
 %%--------------------------------------------------------------------
 %% @doc
-%% set app Appn for provider ApplName
+%% Check if lock is open or locked 
 %% @end
 %%--------------------------------------------------------------------
--spec set_app(App :: atom(), ApplName :: string()) -> ok | {error, Error :: term()}.
+-spec is_open(Lock :: atom()) -> true | false | {error, Error :: term()}.
 
-set_app(App,ApplName)->
-    gen_server:call(?SERVER, {set_app,App,ApplName},infinity).
-    
+is_open(Lock)->
+    gen_server:call(?SERVER, {is_open,Lock},infinity).
 %%--------------------------------------------------------------------
 %% @doc
-%% get app from provider ApplName
+%% Check if lock is open or locked 
 %% @end
 %%--------------------------------------------------------------------
--spec get_app(ApplName :: string()) -> {ok,App :: atom()} | {error, Error :: term()}.
+-spec is_open(Lock :: atom(),LockTimeOut :: integer()) -> true | false  | {error, Error :: term()}.
 
-get_app(ApplName)->
-    gen_server:call(?SERVER, {get_app,ApplName},infinity).
-    
-%%--------------------------------------------------------------------
-%% @doc
-%% set erl_args ErlArgs for provider ApplName
-%% @end
-%%--------------------------------------------------------------------
--spec set_erl_args(ErlArgs :: string(), ApplName :: string()) -> ok | {error, Error :: term()}.
+is_open(Lock,LockTimeOut)->
+    gen_server:call(?SERVER, {is_open,Lock,LockTimeOut},infinity).
 
-set_erl_args(ErlArgs,ApplName)->
-    gen_server:call(?SERVER, {set_erl_args,ErlArgs,ApplName},infinity).
-    
-%%--------------------------------------------------------------------
-%% @doc
-%% get erl_args from provider ApplName
-%% @end
-%%--------------------------------------------------------------------
--spec get_erl_args(ApplName :: string()) -> {ok,ErlArgs :: string()} | {error, Error :: term()}.
-
-get_erl_args(ApplName)->
-    gen_server:call(?SERVER, {get_erl_args,ApplName},infinity).
-    
-%%--------------------------------------------------------------------
-%% @doc
-%% set git_path GitPathfor  provider ApplName
-%% @end
-%%--------------------------------------------------------------------
--spec set_git_path(GitPath :: string(), ApplName :: string()) -> ok | {error, Error :: term()}.
-
-set_git_path(GitPath,ApplName)->
-    gen_server:call(?SERVER, {set_git_path,GitPath,ApplName},infinity).
-    
-%%--------------------------------------------------------------------
-%% @doc
-%% get git  path for provider ApplName
-%% @end
-%%--------------------------------------------------------------------
--spec get_git_path(ApplName :: string()) -> {ok,GitPath :: string()} | {error, Error :: term()}.
-
-get_git_path(ApplName)->
-    gen_server:call(?SERVER, {get_git_path,ApplName},infinity).
-    
 %%--------------------------------------------------------------------
 %% @doc
 %% @spec
@@ -203,18 +176,9 @@ stop()-> gen_server:call(?SERVER, {stop},infinity).
 	  ignore.
 
 init([]) ->
-    ok=lib_etcd_provider:create_table(),    
-    ProviderList=lib_etcd_provider:git_clone_load(),
-    Ok_ProviderList=[X||{ok,X}<-ProviderList],
-    FailedToCreate=[X||{error,X}<-ProviderList],
-
-    ?LOG_NOTICE("Successfully created  ",[Ok_ProviderList]),
-    case FailedToCreate of
-	[]->
-	    ok;
-	_->
-	    ?LOG_NOTICE("Failed to create   ",[FailedToCreate])
-    end,
+    ok=lib_etcd_lock:create_table(),    
+ 
+    ?LOG_NOTICE("Server started  ",[]),
     {ok, #state{}}.
 
 
@@ -223,30 +187,43 @@ init([]) ->
 %% @spec
 %% @end
 %%--------------------------------------------------------------------
-handle_call({all_providers}, _From, State) ->
-    Reply=lib_etcd_provider:get_all_id(),
+handle_call({all_locks}, _From, State) ->
+    Reply=lib_etcd_lock:get_all_id(),
+    {reply, Reply, State};
+
+handle_call({get_info,Lock}, _From, State) ->
+    Reply=lib_etcd_lock:get_info(Lock),
+    {reply, Reply, State};
+
+handle_call({try_lock,Lock}, _From, State) ->
+    Reply=lib_etcd_lock:try_lock(Lock),
+    {reply, Reply, State};
+
+handle_call({try_lock,Lock,LockTimeOut}, _From, State) ->
+    Reply=lib_etcd_lock:try_lock(Lock,LockTimeOut),
+    {reply, Reply, State};
+
+handle_call({is_open,Lock}, _From, State) ->
+    Reply=lib_etcd_lock:is_open(Lock),
+    {reply, Reply, State};
+
+handle_call({try_lock,Lock,LockTimeOut}, _From, State) ->
+    Reply=lib_etcd_lock:is_open(Lock,LockTimeOut),
     {reply, Reply, State};
 
 
-handle_call({get_info,ApplName}, _From, State) ->
-    Reply=lib_etcd_provider:get_info(ApplName),
+handle_call({unlock,Lock,Transaction}, _From, State) ->
+    Reply=lib_etcd_lock:unlock(Lock,Transaction),
     {reply, Reply, State};
 
-handle_call({get_vsn,ApplName}, _From, State) ->
-    Reply=lib_etcd_provider:get(vsn,ApplName),
+handle_call({create,Lock}, _From, State) ->
+    Reply=lib_etcd_lock:create(Lock),
     {reply, Reply, State};
 
-handle_call({get_app,ApplName}, _From, State) ->
-    Reply=lib_etcd_provider:get(app,ApplName),
+handle_call({create,Lock,Time}, _From, State) ->
+    Reply=lib_etcd_lock:create(Lock,Time),
     {reply, Reply, State};
 
-handle_call({get_erl_args,ApplName}, _From, State) ->
-    Reply=lib_etcd_provider:get(erl_args,ApplName),
-    {reply, Reply, State};
-
-handle_call({get_git_path,ApplName}, _From, State) ->
-    Reply=lib_etcd_provider:get(git_path,ApplName),
-    {reply, Reply, State};
 
 
 handle_call({ping}, _From, State) ->

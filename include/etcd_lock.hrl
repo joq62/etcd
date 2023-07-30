@@ -3,8 +3,8 @@
 -define(RECORD,lock).
 
 -record(?RECORD,{
-		 lock_id,
-		 transaction_id,
+		 lock,
+		 transaction,
 		 time,
 		 status
 		}).

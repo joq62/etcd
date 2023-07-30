@@ -68,7 +68,7 @@ read_specs_test(Node)->
     {ok,[]}=rpc:call(Node,etcd_host,get_appl_config,[ ?HostNameTest],5000),
    
 
-    {error,[eexist,"glurk",lib_db_host,_]}=rpc:call(Node,etcd_host,get_port,["glurk"],5000),
+    {error,[eexist,"glurk",lib_etcd_host,_]}=rpc:call(Node,etcd_host,get_port,["glurk"],5000),
  
     ok.
 

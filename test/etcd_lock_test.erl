@@ -4,17 +4,17 @@
 %%% 
 %%% Created : 10 dec 2012
 %%% -------------------------------------------------------------------
--module(lock_test).   
+-module(etcd_lock_test).   
    
 %% --------------------------------------------------------------------
 %% Include files
 %% --------------------------------------------------------------------
 
 %% --------------------------------------------------------------------
+-define(Lock,etcd_lock).
 
 %% External exports
--export([start/0]).
-
+-export([start/1]).
 
 
 %% ====================================================================
@@ -26,7 +26,7 @@
 %% Description: List of test cases 
 %% Returns: non
 %% --------------------------------------------------------------------
-start()->
+start(Node)->
     io:format("Start ~p~n",[{?MODULE,?FUNCTION_NAME,?LINE}]),
 
     ok=setup(),
@@ -47,22 +47,22 @@ lock_test_1()->
 
     %% db_lock timeout set to
     LockTimeOut=3000,   %% 3 Seconds
-    [{error,[eexists,glurk]}]=db_lock:try_lock(glurk,LockTimeOut),
+    [{error,[eexists,glurk]}]=etcd_lock:try_lock(glurk,LockTimeOut),
 
-    {ok,TransActionsId_1}=db_lock:try_lock(orchestrate_lock,LockTimeOut),
+    {ok,TransAction_1}=etcd_lock:try_lock(?Lock,LockTimeOut),
     timer:sleep(1*1000),
-    locked=db_lock:try_lock(orchestrate_lock,LockTimeOut),
+    locked=etcd_lock:try_lock(?Lock,LockTimeOut),
 
-    {error,[eexists,glurk]}=db_lock:unlock(glurk,TransActionsId_1),
-    {error,["eexists Transactions id",glurk,_]}=db_lock:unlock(orchestrate_lock,glurk),
+    {error,[eexists,glurk]}=etcd_lock:unlock(glurk,TransAction_1),
+    {error,["eexists Transactions",glurk,_]}=etcd_lock:unlock(?Lock,glurk),
 
-    ok=db_lock:unlock(orchestrate_lock,TransActionsId_1),
-    {ok,TransActionsId_2}=db_lock:try_lock(orchestrate_lock,LockTimeOut),
-    locked=db_lock:try_lock(orchestrate_lock,LockTimeOut),
+    ok=etcd_lock:unlock(?Lock,TransAction_1),
+    {ok,TransAction_2}=etcd_lock:try_lock(?Lock,LockTimeOut),
+    locked=etcd_lock:try_lock(?Lock,LockTimeOut),
 
     timer:sleep(3*1000),
-    {ok,TransActionsId_3}=db_lock:try_lock(orchestrate_lock,LockTimeOut),
-    locked=db_lock:try_lock(orchestrate_lock,LockTimeOut),
+    {ok,TransAction_3}=etcd_lock:try_lock(?Lock,LockTimeOut),
+    locked=etcd_lock:try_lock(?Lock,LockTimeOut),
   
 %    io:format("TransActionsId_1 ~p~n",[{TransActionsId_1,?MODULE,?FUNCTION_NAME,?LINE}]),
 %    io:format("TransActionsId_2 ~p~n",[{TransActionsId_2,?MODULE,?FUNCTION_NAME,?LINE}]),
@@ -75,7 +75,8 @@ lock_test_1()->
 %% --------------------------------------------------------------------
 setup()->
     io:format("Start ~p~n",[{?MODULE,?FUNCTION_NAME,?LINE}]),
-
-    [{orchestrate_lock,na,0,na}]=db_lock:read_all_info(),
-    [orchestrate_lock]=db_lock:read_all(),
+    ok=etcd_lock:create(?Lock),
+    [?Lock]=etcd_lock:all_locks(),    
+    {?Lock,na,0,na}=etcd_lock:get_info(?Lock),
+    
     ok.

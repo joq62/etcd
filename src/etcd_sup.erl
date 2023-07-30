@@ -35,7 +35,9 @@ init([]) ->
 		  #{id=>etcd_host,
 		    start=>{etcd_host,start_link,[]}},
 		  #{id=>etcd_provider,
-		    start=>{etcd_provider,start_link,[]}}
+		    start=>{etcd_provider,start_link,[]}},
+		  #{id=>etcd_lock,
+		    start=>{etcd_lock,start_link,[]}}
 		 ],
     {ok, {SupFlags, ChildSpecs}}.
 

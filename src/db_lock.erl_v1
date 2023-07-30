@@ -1,9 +1,8 @@
--module(db_lock).
+-module(etcd_lock_tabort).
 -compile(export_all).
 
 -include_lib("stdlib/include/qlc.hrl").
--include("db_lock.hrl").
--include("etcd.hrl").
+-include("etcd_lock.hrl").
 
 
 create_table()->
