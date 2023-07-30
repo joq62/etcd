@@ -1,5 +1,6 @@
 all:
 	rm -rf  *~ */*~ src/*.beam test/*.beam test_ebin erl_cra*;
+	rm -rf *.dir;
 	rm -rf _build;
 	rm -rf logs;
 	rm -rf ebin
@@ -31,6 +32,7 @@ clean:
 eunit:
 #	Standard
 	rm -rf  *~ */*~ src/*.beam test/*.beam test_ebin erl_cra*;
+	rm -rf *.dir;
 	rm -rf _build;
 	rm -rf ebin
 	rm -rf logs;
