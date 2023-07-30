@@ -3,5 +3,6 @@
 -define(RECORD,cluster_to_deploy).
 
 -record(?RECORD,{
-		 spec_id
+		 cluster_spec,
+		 creator
 		}).

@@ -34,6 +34,7 @@ start()->
     ok=etcd_deployment_test:start(),
     ok=etcd_cluster_test:start(),
     ok=etcd_deployment_record_test:start(),
+    ok=etcd_cluster_to_deploy_test:start(),
 %    ok=cluster_test:start(),
 %    ok=cluster_spec_test:start(),
 %    ok=deploy_test:start(),

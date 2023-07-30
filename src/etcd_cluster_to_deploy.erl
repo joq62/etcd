@@ -6,7 +6,7 @@
 %%% @end
 %%% Created : 18 Apr 2023 by c50 <joq62@c50>
 %%%-------------------------------------------------------------------
--module(etcd_deployment_record).
+-module(etcd_cluster_to_deploy).
 
 -behaviour(gen_server).
 %%--------------------------------------------------------------------
@@ -15,22 +15,16 @@
 %%--------------------------------------------------------------------
 
 -include("log.api").
--include("etcd_cluster.hrl").
+-include("etcd_cluster_to_deploy.hrl").
  
 
 %% API
 
 -export([
-	 create/1,
 	 create/2,
-	 all_locks/0,
-	 get_info/1,
-	 
-	 try_lock/1,
-	 try_lock/2,
-	 unlock/2,
-	 is_open/1,
-	 is_open/2,
+	 get_info/0,
+	 get_cluster_spec/0,
+	 get_creator/0,
 	 
 	 ping/0,
 	 stop/0
@@ -55,88 +49,41 @@
 %% Creates a new instance 
 %% @end
 %%--------------------------------------------------------------------
--spec create(LockId :: atom()) -> ok | {error, Error :: term()}.
-
-create(LockId)->
-    create(LockId,0).
-%%--------------------------------------------------------------------
-%% @doc
-%% Creates a new instance 
-%% @end
-%%--------------------------------------------------------------------
--spec create(Lock :: atom(),Time :: integer()) -> ok | {error, Error :: term()}.
-create(Lock,Time)->
-    gen_server:call(?SERVER, {create,Lock,Time},infinity).
+-spec create(ClusterSpec :: string(),Creator :: node()) -> ok | {error, Error :: term()}.
+create(ClusterSpec,Creator)->
+    gen_server:call(?SERVER, {create,ClusterSpec,Creator},infinity).
     
-%%--------------------------------------------------------------------
-%% @doc
-%% get all locks name that are stored in dbase
-%% @end
-%%--------------------------------------------------------------------
--spec all_locks() -> ListOfLocks :: term().
-
-all_locks()->
-    gen_server:call(?SERVER, {all_locks},infinity).
     
 
 %%--------------------------------------------------------------------
 %% @doc
-%% Get all information related to lock Lock 
+%% Get all info for the deployment 
 %% @end
 %%--------------------------------------------------------------------
--spec get_info(Lock :: atom()) -> {ok,LockInfo :: term()} | {error, Error :: term()}.
+-spec get_info() -> {ok,DeploymentInfo :: term()} | {error, Error :: term()}.
 
-get_info(Lock)->
-    gen_server:call(?SERVER, {get_info,Lock},infinity).
-
+get_info()->
+    gen_server:call(?SERVER, {get_info},infinity).
 
 %%--------------------------------------------------------------------
 %% @doc
-%% Tries to take lead by locking 
+%% Get cluster spec that shall be deployd
 %% @end
 %%--------------------------------------------------------------------
--spec try_lock(Lock :: atom()) -> {ok,Transaction :: integer()} | locked | {error, Error :: term()}.
+-spec get_cluster_spec() -> {ok,Cluster_spec :: string()} | {error, Error :: term()}.
 
-try_lock(Lock)->
-    gen_server:call(?SERVER, {try_lock,Lock},infinity).
+get_cluster_spec()->
+    gen_server:call(?SERVER, {get_cluster_spec},infinity).
 %%--------------------------------------------------------------------
 %% @doc
-%% Tries to take lead by locking 
+%% Get the creator node  
 %% @end
 %%--------------------------------------------------------------------
--spec try_lock(Lock :: atom(), LockTimeOut :: integer()) -> {ok,Transaction :: integer()} | locked | {error, Error :: term()}.
+-spec get_creator() -> {ok,Creator :: node()} | {error, Error :: term()}.
 
-try_lock(Lock,LockTimeOut)->
-    gen_server:call(?SERVER, {try_lock,Lock,LockTimeOut},infinity).
+get_creator()->
+    gen_server:call(?SERVER, {get_creator},infinity).
 
-%%--------------------------------------------------------------------
-%% @doc
-%% unlock 
-%% @end
-%%--------------------------------------------------------------------
--spec unlock(Lock :: atom(), Transaction :: integer()) -> ok | {error, Error :: term()}.
-
-unlock(Lock,Transaction)->
-    gen_server:call(?SERVER, {unlock,Lock,Transaction},infinity).
-
-%%--------------------------------------------------------------------
-%% @doc
-%% Check if lock is open or locked 
-%% @end
-%%--------------------------------------------------------------------
--spec is_open(Lock :: atom()) -> true | false | {error, Error :: term()}.
-
-is_open(Lock)->
-    gen_server:call(?SERVER, {is_open,Lock},infinity).
-%%--------------------------------------------------------------------
-%% @doc
-%% Check if lock is open or locked 
-%% @end
-%%--------------------------------------------------------------------
--spec is_open(Lock :: atom(),LockTimeOut :: integer()) -> true | false  | {error, Error :: term()}.
-
-is_open(Lock,LockTimeOut)->
-    gen_server:call(?SERVER, {is_open,Lock,LockTimeOut},infinity).
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -178,6 +125,7 @@ stop()-> gen_server:call(?SERVER, {stop},infinity).
 
 init([]) ->
     
+    ok=lib_etcd_cluster_to_deploy:create_table(),
  
     ?LOG_NOTICE("Server started  ",[]),
     {ok, #state{}}.
@@ -188,38 +136,24 @@ init([]) ->
 %% @spec
 %% @end
 %%--------------------------------------------------------------------
-handle_call({all_locks}, _From, State) ->
-    Reply=lib_etcd_lock:get_all_id(),
+
+
+handle_call({get_info}, _From, State) ->
+    Reply=lib_etcd_cluster_to_deploy:get_info(),
     {reply, Reply, State};
 
-handle_call({get_info,Lock}, _From, State) ->
-    Reply=lib_etcd_lock:get_info(Lock),
+
+handle_call({get_cluster_spec}, _From, State) ->
+    Reply=lib_etcd_cluster_to_deploy:get(cluster_spec),
     {reply, Reply, State};
 
-handle_call({try_lock,Lock}, _From, State) ->
-    Reply=lib_etcd_lock:try_lock(Lock),
+handle_call({get_creator}, _From, State) ->
+    Reply=lib_etcd_cluster_to_deploy:get(creator),
     {reply, Reply, State};
 
-handle_call({try_lock,Lock,LockTimeOut}, _From, State) ->
-    Reply=lib_etcd_lock:try_lock(Lock,LockTimeOut),
+handle_call({create,ClusterSpec,Creator}, _From, State) ->
+    Reply=lib_etcd_cluster_to_deploy:create(ClusterSpec,Creator),
     {reply, Reply, State};
-
-handle_call({is_open,Lock}, _From, State) ->
-    Reply=lib_etcd_lock:is_open(Lock),
-    {reply, Reply, State};
-
-handle_call({unlock,Lock,Transaction}, _From, State) ->
-    Reply=lib_etcd_lock:unlock(Lock,Transaction),
-    {reply, Reply, State};
-
-handle_call({create,Lock}, _From, State) ->
-    Reply=lib_etcd_lock:create(Lock),
-    {reply, Reply, State};
-
-handle_call({create,Lock,Time}, _From, State) ->
-    Reply=lib_etcd_lock:create(Lock,Time),
-    {reply, Reply, State};
-
 
 
 handle_call({ping}, _From, State) ->
@@ -300,30 +234,3 @@ format_status(_Opt, Status) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
-create_records(ClusterSpec)->
-    {ok,CookieStr}=etcd_cluster:get_cookie_str(ClusterSpec),
-    {ok,DeploymentSpec}=etcd_cluster:get_deployment_spec(ClusterSpec),
-    {ok,DeploymentList}=etcd_deployment:get_deployment_list(DeploymentSpec),
-    SortedDeploymentLis=lists:sort(DeploymentList),
-    Num=length(SortedDeploymentLis),
-    DeploymentRecords=create_records(SortedDeploymentLis,Num,CookieStr,[]),
-    
-    DeploymentRecords.
-
-
-
-create_records([],_Num,_CookieStr,Acc)->
-    Acc;
-create_records([{Provider,Host}|T],N,CookieStr,Acc) ->
-    {ok,App}=etcd_provider:get_app(Provider),
-    NStr=integer_to_list(N),
-    NodeName=CookieStr++"_"++NStr,
-    Node=list_to_atom(NodeName++"@"++Host),
-    R=#deployment_record{node_name=NodeName,
-                         node=Node,
-			 dir=NodeName,
-			 provider=Provider,
-			 app=App,
-			 host=Host},
-    create_records(T,N-1,CookieStr,[R|Acc]).
-    

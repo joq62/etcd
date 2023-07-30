@@ -18,7 +18,7 @@
 -export([create_table/0,create_table/2,add_node/2]).
 -export([create/1,delete/1]).
 -export([get_info/1,get_all/0,get/2,get_all_id/0]).
--export([set_deployment_records/2]).
+-export([set/3]).
 -export([do/1]).
 -export([member/1]).
 -export([git_clone_load/0]).
@@ -168,20 +168,23 @@ get_all_id()->
     Z=do(qlc:q([X || X <- mnesia:table(?TABLE)])),
     [R#?RECORD.name||R<-Z].
     
-set_deployment_records(DeploymentRecords,ClusterName)->
+set(Key,Value,ClusterName)->
     Z=do(qlc:q([X || X <- mnesia:table(?TABLE),		
 		     X#?RECORD.name==ClusterName])),
     Result=case Z of
 	       []->
 		   {error,[eexist,ClusterName,?MODULE,?LINE]};
 	       [R] ->
-		   R1=R#?RECORD{deployment_records=DeploymentRecords},
-		   case mnesia:write(R1) of
-		       {atomic,ok}->
-			   ok;
-		       Reason->
-			   {error,[Reason,?MODULE,?LINE]}
-		   end
+		   case Key of
+		       deployment_records->
+			   R1=R#?RECORD{deployment_records=Value},
+			   case mnesia:write(R1) of
+			       {atomic,ok}->
+				   ok;
+			       Reason->
+				   {error,[Reason,?MODULE,?LINE]}
+			   end
+		   end			   
 	   end,
     Result.
     
