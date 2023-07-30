@@ -204,7 +204,7 @@ stop()-> gen_server:call(?SERVER, {stop},infinity).
 
 init([]) ->
     ok=lib_provider:create_table(),    
-    ProviderList=lib_provider:git_clone_load(),
+    ProviderList=lib_etcd_provider:git_clone_load(),
     Ok_ProviderList=[X||{ok,X}<-ProviderList],
     FailedToCreate=[X||{error,X}<-ProviderList],
 
@@ -224,28 +224,28 @@ init([]) ->
 %% @end
 %%--------------------------------------------------------------------
 handle_call({all_providers}, _From, State) ->
-    Reply=lib_provider:get_all_id(),
+    Reply=lib_etcd_provider:get_all_id(),
     {reply, Reply, State};
 
 
 handle_call({get_info,ApplName}, _From, State) ->
-    Reply=lib_provider:get_info(ApplName),
+    Reply=lib_etcd_provider:get_info(ApplName),
     {reply, Reply, State};
 
 handle_call({get_vsn,ApplName}, _From, State) ->
-    Reply=lib_provider:get(vsn,ApplName),
+    Reply=lib_etcd_provider:get(vsn,ApplName),
     {reply, Reply, State};
 
 handle_call({get_app,ApplName}, _From, State) ->
-    Reply=lib_provider:get(app,ApplName),
+    Reply=lib_etcd_provider:get(app,ApplName),
     {reply, Reply, State};
 
 handle_call({get_erl_args,ApplName}, _From, State) ->
-    Reply=lib_provider:get(erl_args,ApplName),
+    Reply=lib_etcd_provider:get(erl_args,ApplName),
     {reply, Reply, State};
 
 handle_call({get_git_path,ApplName}, _From, State) ->
-    Reply=lib_provider:get(git_path,ApplName),
+    Reply=lib_etcd_provider:get(git_path,ApplName),
     {reply, Reply, State};
 
 

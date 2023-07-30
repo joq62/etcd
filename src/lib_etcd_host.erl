@@ -4,14 +4,14 @@
 %%%
 %%% @end
 %%% Created : 21 Dec 2022 by c50 <joq62@c50>
--module(lib_db_host).
+-module(lib_etcd_host).
 
 %% --------------------------------------------------------------------
 %% Include files
 %% --------------------------------------------------------------------
 -import(lists, [foreach/2]).
 -include_lib("stdlib/include/qlc.hrl").
--include("db_host.hrl").
+-include("etcd_host.hrl").
 
 %% External exports
 

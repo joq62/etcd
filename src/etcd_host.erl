@@ -227,8 +227,8 @@ stop()-> gen_server:call(?SERVER, {stop},infinity).
 	  ignore.
 
 init([]) ->
-    ok=lib_db_host:create_table(),    
-    ClusterSpecList=lib_db_host:git_clone_load(),
+    ok=lib_etcd_host:create_table(),    
+    ClusterSpecList=lib_etcd_host:git_clone_load(),
     Ok_ClusterSpec=[X||{ok,X}<-ClusterSpecList],
     FailedToCreate=[X||{error,X}<-ClusterSpecList],
 
@@ -248,32 +248,32 @@ init([]) ->
 %% @end
 %%--------------------------------------------------------------------
 handle_call({all_hosts}, _From, State) ->
-    Reply=lib_db_host:get_all_id(),
+    Reply=lib_etcd_host:get_all_id(),
     {reply, Reply, State};
 
 
 handle_call({get_info,HostName}, _From, State) ->
-    Reply=lib_db_host:get_info(HostName),
+    Reply=lib_etcd_host:get_info(HostName),
     {reply, Reply, State};
 
 handle_call({get_ip,HostName}, _From, State) ->
-    Reply=lib_db_host:get(ip,HostName),
+    Reply=lib_etcd_host:get(ip,HostName),
     {reply, Reply, State};
 
 handle_call({get_port,HostName}, _From, State) ->
-    Reply=lib_db_host:get(port,HostName),
+    Reply=lib_etcd_host:get(port,HostName),
     {reply, Reply, State};
 
 handle_call({get_user,HostName}, _From, State) ->
-    Reply=lib_db_host:get(user,HostName),
+    Reply=lib_etcd_host:get(user,HostName),
     {reply, Reply, State};
 
 handle_call({get_passwd,HostName}, _From, State) ->
-    Reply=lib_db_host:get(passwd,HostName),
+    Reply=lib_etcd_host:get(passwd,HostName),
     {reply, Reply, State};
 
 handle_call({get_appl_config,HostName}, _From, State) ->
-    Reply=lib_db_host:get(application_config,HostName),
+    Reply=lib_etcd_host:get(application_config,HostName),
     {reply, Reply, State};
 
 

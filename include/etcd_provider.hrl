@@ -1,6 +1,6 @@
 -define(ProviderSpecDir,"provider_specs").
 -define(GitPathProviderSpecs,"https://github.com/joq62/provider_specs.git").
-
+-define(Extension,".provider").
 -define(TABLE,provider_spec).
 -define(RECORD,?TABLE).
 -record(?RECORD,{

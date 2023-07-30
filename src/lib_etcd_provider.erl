@@ -5,13 +5,13 @@
 %%% @end
 %%% Created : 21 Dec 2022 by c50 <joq62@c50>
 
--module(lib_provider). 
+-module(lib_etcd_provider). 
 
 %% --------------------------------------------------------------------
 %% Include files
 %% --------------------------------------------------------------------
 -include_lib("stdlib/include/qlc.hrl").
--include("db_provider_spec.hrl").
+-include("etcd_provider.hrl").
 
 %% External exports
 -export([create_table/0,create_table/2,add_node/2]).

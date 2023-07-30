@@ -7,6 +7,6 @@
               {env,[]},
               {modules,[cmn_appl,db_cluster_spec,db_config,db_deploy,db_lock,
                         etcd,etcd_app,etcd_host,etcd_provider,etcd_sup,host,
-                        lib_db,lib_db_host,lib_provider]},
+                        lib_db,lib_etcd_host,lib_etcd_provider]},
               {licenses,["Apache-2.0"]},
               {links,[]}]}.
