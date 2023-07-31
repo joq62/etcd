@@ -22,7 +22,13 @@
 
 -export([
 	 create_records/1,
-	 
+	 get_node_name/1,
+	 get_node/1,
+	 get_app/1,
+	 get_dir/1,
+	 get_provider/1,
+	 get_host/1,
+
 	 ping/0,
 	 stop/0
 	]).
@@ -50,6 +56,66 @@
 
 create_records(ClusterSpec)->
     gen_server:call(?SERVER, {create_records,ClusterSpec},infinity).
+
+%%--------------------------------------------------------------------
+%% @doc
+%% Creates  to take lead by locking 
+%% @end
+%%--------------------------------------------------------------------
+-spec get_node_name(Record :: term()) -> {ok,NodeName :: string()} | {error, Error :: term()}.
+
+get_node_name(Record)->
+    gen_server:call(?SERVER, {get_node_name,Record},infinity).
+
+%%--------------------------------------------------------------------
+%% @doc
+%% Creates  to take lead by locking 
+%% @end
+%%--------------------------------------------------------------------
+-spec get_node(Record :: term()) -> {ok, Node :: node()} | {error, Error :: term()}.
+
+get_node(Record)->
+    gen_server:call(?SERVER, {get_node,Record},infinity).
+
+%%--------------------------------------------------------------------
+%% @doc
+%% Creates  to take lead by locking 
+%% @end
+%%--------------------------------------------------------------------
+-spec get_app(Record :: term()) -> {ok,App :: atom()} | {error, Error :: term()}.
+
+get_app(Record)->
+    gen_server:call(?SERVER, {get_app,Record},infinity).
+
+%%--------------------------------------------------------------------
+%% @doc
+%% Creates  to take lead by locking 
+%% @end
+%%--------------------------------------------------------------------
+-spec get_dir(Record :: term()) -> {ok,Dir :: string()} | {error, Error :: term()}.
+
+get_dir(Record)->
+    gen_server:call(?SERVER, {get_dir,Record},infinity).
+
+%%--------------------------------------------------------------------
+%% @doc
+%% Creates  to take lead by locking 
+%% @end
+%%--------------------------------------------------------------------
+-spec get_provider(Record :: term()) -> {ok, Provider :: string()} | {error, Error :: term()}.
+
+get_provider(Record)->
+    gen_server:call(?SERVER, {get_provider,Record},infinity).
+
+%%--------------------------------------------------------------------
+%% @doc
+%% Creates  to take lead by locking 
+%% @end
+%%--------------------------------------------------------------------
+-spec get_host(Record :: term()) -> {ok,Host :: string()} | {error, Error :: term()}.
+
+get_host(Record)->
+    gen_server:call(?SERVER, {get_host,Record},infinity).
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -101,6 +167,25 @@ init([]) ->
 %% @spec
 %% @end
 %%--------------------------------------------------------------------
+handle_call({get_node_name,Record}, _From, State) ->
+    Reply={ok,Record#deployment_record.node_name},
+    {reply, Reply, State};
+handle_call({get_node,Record}, _From, State) ->
+    Reply={ok,Record#deployment_record.node},
+    {reply, Reply, State};
+handle_call({get_app,Record}, _From, State) ->
+    Reply={ok,Record#deployment_record.app},
+    {reply, Reply, State};
+handle_call({get_dir,Record}, _From, State) ->
+    Reply={ok,Record#deployment_record.dir},
+    {reply, Reply, State};
+handle_call({get_provider,Record}, _From, State) ->
+    Reply={ok,Record#deployment_record.provider},
+    {reply, Reply, State};
+handle_call({get_host,Record}, _From, State) ->
+    Reply={ok,Record#deployment_record.host},
+    {reply, Reply, State};
+
 handle_call({create_records,ClusterSpec}, _From, State) ->
     {ok,CookieStr}=etcd_cluster:get_cookie_str(ClusterSpec),
  %   {ok,CookieStr}=lib_etcd_cluster:get(cookie_str,ClusterName),

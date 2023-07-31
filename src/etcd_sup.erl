@@ -36,17 +36,18 @@ init([]) ->
 		    start=>{etcd_host,start_link,[]}},
 		  #{id=>etcd_provider,
 		    start=>{etcd_provider,start_link,[]}},
-		  #{id=>etcd_lock,
-		    start=>{etcd_lock,start_link,[]}},
 		  #{id=>etcd_deployment,
 		    start=>{etcd_deployment,start_link,[]}},
-		  #{id=>etcd_deployment_record,
-		    start=>{etcd_deployment_record,start_link,[]}},
 		  #{id=>etcd_cluster,
 		    start=>{etcd_cluster,start_link,[]}},
-
 		  #{id=>etcd_cluster_to_deploy,
-		    start=>{etcd_cluster_to_deploy,start_link,[]}}
+		    start=>{etcd_cluster_to_deploy,start_link,[]}},
+		  #{id=>etcd_lock,
+		    start=>{etcd_lock,start_link,[]}},
+		  #{id=>etcd_deployment_record,
+		    start=>{etcd_deployment_record,start_link,[]}}
+		  
+		
 		 ],
     {ok, {SupFlags, ChildSpecs}}.
 
