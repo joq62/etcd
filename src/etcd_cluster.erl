@@ -26,6 +26,7 @@
 	 
 	 get_cookie_str/1,
 	 get_deployment_spec/1,
+	 create_deployment_records/1,
 	 get_deployment_records/1,
 	 set_deployment_records/2,	 
 	 
@@ -88,7 +89,16 @@ create(ClusterName)->
 get_cookie_str(ClusterName)->
     gen_server:call(?SERVER, {get_cookie_str,ClusterName},infinity).
 
-    
+%%--------------------------------------------------------------------
+%% @doc
+%% create deployment_records for cluster ClusterName 
+%% @end
+%%--------------------------------------------------------------------
+-spec create_deployment_records(ClusterName :: string()) -> ok | {error, Error :: term()}.
+
+create_deployment_records(ClusterName)->
+    gen_server:call(?SERVER, {create_deployment_records,ClusterName},infinity).
+        
 %%--------------------------------------------------------------------
 %% @doc
 %% get deployment_spec for cluster ClusterName 
@@ -193,6 +203,12 @@ handle_call({get_cookie_str,ClusterName}, _From, State) ->
 handle_call({get_deployment_spec,ClusterName}, _From, State) ->
     Reply=lib_etcd_cluster:get(deployment_spec,ClusterName),
     {reply, Reply, State};
+
+handle_call({create_deployment_records,ClusterName}, _From, State) ->
+    Reply=not_implemented,
+    {reply, Reply, State};
+
+
 
 handle_call({set_deployment_records,DeploymentRecords,ClusterName}, _From, State) ->
     Reply=lib_etcd_cluster:set(deployment_records,DeploymentRecords,ClusterName),

@@ -103,7 +103,9 @@ init([]) ->
 %%--------------------------------------------------------------------
 handle_call({create_records,ClusterSpec}, _From, State) ->
     {ok,CookieStr}=etcd_cluster:get_cookie_str(ClusterSpec),
+ %   {ok,CookieStr}=lib_etcd_cluster:get(cookie_str,ClusterName),
     {ok,DeploymentSpec}=etcd_cluster:get_deployment_spec(ClusterSpec),
+ %   {ok,DeploymentSpec}=lib_etcd_cluster:get(deployment_spec,ClusterName),
     {ok,DeploymentList}=etcd_deployment:get_deployment_list(DeploymentSpec),
     SortedDeploymentLis=lists:sort(DeploymentList),
     Num=length(SortedDeploymentLis),

@@ -43,8 +43,9 @@ start()->
 create_record_test(Node)->
     io:format("Start ~p~n",[{?MODULE,?FUNCTION_NAME}]),
     
-    {ok,DeploymentRecords}=etcd_deployment_record:create_records(?ClusterNameTest),
+    {ok,DeploymentRecords}=rpc:call(Node,etcd_deployment_record,create_records,[?ClusterNameTest],5000),
     {ok,L}=rpc:call(Node,etcd_cluster,get_deployment_records,[?ClusterNameTest],5000),
+    
     DeploymentRecords=L,
     ok.
 
