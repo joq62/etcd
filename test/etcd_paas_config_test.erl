@@ -9,7 +9,7 @@
 %%% Pod consits beams from all services, app and app and sup erl.
 %%% The setup of envs is
 %%% -------------------------------------------------------------------
--module(all).      
+-module(etcd_paas_config_test).       
  
 -export([start/0]).
 %% --------------------------------------------------------------------
@@ -23,30 +23,36 @@
 %% Returns: List({HostId,Ip,SshPort,Uid,Pwd}
 %% --------------------------------------------------------------------
 start()->
-   
-    ok=setup(),
+    io:format("Start ~p~n",[{?MODULE,?FUNCTION_NAME}]),
 
-    
-       % dbetcd
-    ok=etcd_host_test:start(node()),
-    ok=etcd_provider_test:start(node()),
-    ok=etcd_lock_test:start(node()),
-    ok=etcd_deployment_test:start(),
-    ok=etcd_cluster_test:start(),
-    ok=etcd_cluster_to_deploy_test:start(),
-    ok=etcd_paas_config_test:start(),
-%    ok=cluster_test:start(),
-%    ok=cluster_spec_test:start(),
-%    ok=deploy_test:start(),
-%    ok=lock_test:start(),
-    
-%    ok=provider_test:start(node()),
-%    ok=dist_test:start(),
-                 
+    ok=setup(),
+    ok=crudo_test(),
+  
+    io:format("Stop OK !!! ~p~n",[{?MODULE,?FUNCTION_NAME}]),
+
+    ok.
+
+
+%% --------------------------------------------------------------------
+%% Function: available_hosts()
+%% Description: Based on hosts.config file checks which hosts are avaible
+%% Returns: List({HostId,Ip,SshPort,Uid,Pwd}
+%% --------------------------------------------------------------------
+crudo_test()->
+    io:format("Start ~p~n",[{?MODULE,?FUNCTION_NAME}]),
    
-    io:format("Test OK !!! ~p~n",[?MODULE]),
-    timer:sleep(2000),
-    init:stop(),
+    []=etcd_paas_config:get_info(),
+    ok=etcd_paas_config:create("cluster_spec",test_lock),
+    {ok,"cluster_spec"}=etcd_paas_config:get_cluster_spec(),
+    {ok,test_lock}=etcd_paas_config:get_lock(),
+    {
+     error,["Already initiated",{aborted,paas_config},lib_etcd_paas_config,_]
+    }=etcd_paas_config:create("cluster_spec",test_lock),  
+    ok=etcd_paas_config:delete(),   
+    ok=etcd_paas_config:create("cluster_spec_2",test_lock_2),
+    {ok,"cluster_spec_2"}=etcd_paas_config:get_cluster_spec(),
+    {ok,test_lock_2}=etcd_paas_config:get_lock(),
+
     ok.
 
 %% --------------------------------------------------------------------
@@ -64,9 +70,7 @@ start()->
 
 setup()->
     io:format("Start ~p~n",[{?MODULE,?FUNCTION_NAME}]),
-    ok=application:start(log),
-    pong=log:ping(),
-
-    ok=application:start(etcd),
-    pong=etcd:ping(),
+    Node=node(),
+    pong=rpc:call(Node,etcd,ping,[],5000),
+   
     ok.

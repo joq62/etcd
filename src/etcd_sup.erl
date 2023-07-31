@@ -45,7 +45,9 @@ init([]) ->
 		  #{id=>etcd_lock,
 		    start=>{etcd_lock,start_link,[]}},
 		  #{id=>etcd_deployment_record,
-		    start=>{etcd_deployment_record,start_link,[]}}
+		    start=>{etcd_deployment_record,start_link,[]}},
+		  #{id=>etcd_paas_config,
+		    start=>{etcd_paas_config,start_link,[]}}
 		  
 		
 		 ],
