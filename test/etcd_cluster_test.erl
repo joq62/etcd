@@ -17,7 +17,7 @@
 %% --------------------------------------------------------------------
 
 -define(ClusterNameTest,"test_c50_1").
--define(RecordTest,{deployment_record,"a_1",'a_1@c50',etcd,"a_1","etcd","c50"}).
+-define(RecordTest,{deployment_record,"a_1",'a_1@c50',etcd,"a_1.provider_dir","etcd","c50"}).
 
 %% --------------------------------------------------------------------
 %% Function: available_hosts()
@@ -51,7 +51,7 @@ create_record_test(Node)->
     {ok,"a_1"}=etcd_deployment_record:get_node_name(?RecordTest),
     {ok,a_1@c50}=etcd_deployment_record:get_node(?RecordTest),
     {ok,etcd}=etcd_deployment_record:get_app(?RecordTest),
-    {ok,"a_1"}=etcd_deployment_record:get_dir(?RecordTest),
+    {ok,"a_1.provider_dir"}=etcd_deployment_record:get_dir(?RecordTest),
     {ok,"etcd"}=etcd_deployment_record:get_provider(?RecordTest),
     {ok,"c50"}=etcd_deployment_record:get_host(?RecordTest),
     

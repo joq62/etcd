@@ -62,10 +62,10 @@ boot_test()->
     {ok,ClusterSpec}=etcd_cluster_to_deploy:get_cluster_spec(),
     {ok,?CookieStr}=etcd_cluster:get_cookie_str(ClusterSpec),
     {ok,DeploymentRecords}=etcd_cluster:get_deployment_records(ClusterSpec),
-    [{deployment_record,"a_1",a_1@c50,etcd,"a_1","etcd","c50"},
-     {deployment_record,"a_2",a_2@c50,divi,"a_2","divi","c50"},
-     {deployment_record,"a_3",a_3@c50,control,"a_3","control","c50"},
-     {deployment_record,"a_4",a_4@c50,adder,"a_4","adder","c50"}
+    [{deployment_record,"a_1",a_1@c50,etcd,"a_1.provider_dir","etcd","c50"},
+     {deployment_record,"a_2",a_2@c50,divi,"a_2.provider_dir","divi","c50"},
+     {deployment_record,"a_3",a_3@c50,control,"a_3.provider_dir","control","c50"},
+     {deployment_record,"a_4",a_4@c50,adder,"a_4.provider_dir","adder","c50"}
     ]=lists:sort(DeploymentRecords),
    
     ok.
