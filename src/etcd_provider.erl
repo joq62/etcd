@@ -203,17 +203,21 @@ stop()-> gen_server:call(?SERVER, {stop},infinity).
 	  ignore.
 
 init([]) ->
-    ok=lib_etcd_provider:create_table(),    
-    ProviderList=lib_etcd_provider:git_clone_load(),
-    Ok_ProviderList=[X||{ok,X}<-ProviderList],
-    FailedToCreate=[X||{error,X}<-ProviderList],
-
-    ?LOG_NOTICE("Successfully created  ",[Ok_ProviderList]),
-    case FailedToCreate of
+    case lists:delete(node(),sd:get_node(etcd)) of
 	[]->
-	    ok;
+	    ok=lib_etcd_provider:create_table(),    
+	    ProviderList=lib_etcd_provider:git_clone_load(),
+	    Ok_ProviderList=[X||{ok,X}<-ProviderList],
+	    FailedToCreate=[X||{error,X}<-ProviderList],
+	    ?LOG_NOTICE("Successfully created  ",[Ok_ProviderList]),
+	    case FailedToCreate of
+		[]->
+		    ok;
+		_->
+		    ?LOG_NOTICE("Failed to create   ",[FailedToCreate])
+	    end;
 	_->
-	    ?LOG_NOTICE("Failed to create   ",[FailedToCreate])
+	    ok
     end,
     {ok, #state{}}.
 

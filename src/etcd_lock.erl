@@ -176,8 +176,13 @@ stop()-> gen_server:call(?SERVER, {stop},infinity).
 	  ignore.
 
 init([]) ->
-    ok=lib_etcd_lock:create_table(),    
- 
+    case lists:delete(node(),sd:get_node(etcd)) of
+	[]->
+	    ok=lib_etcd_lock:create_table();
+	_ ->
+	    ok
+    end,
+    
     ?LOG_NOTICE("Server started  ",[]),
     {ok, #state{}}.
 

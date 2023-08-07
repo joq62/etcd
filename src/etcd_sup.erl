@@ -40,8 +40,6 @@ init([]) ->
 		    start=>{etcd_deployment,start_link,[]}},
 		  #{id=>etcd_cluster,
 		    start=>{etcd_cluster,start_link,[]}},
-		  #{id=>etcd_cluster_to_deploy,
-		    start=>{etcd_cluster_to_deploy,start_link,[]}},
 		  #{id=>etcd_lock,
 		    start=>{etcd_lock,start_link,[]}},
 		  #{id=>etcd_deployment_record,

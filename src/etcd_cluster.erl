@@ -168,18 +168,22 @@ stop()-> gen_server:call(?SERVER, {stop},infinity).
 	  ignore.
 
 init([]) ->
-    ok=lib_etcd_cluster:create_table(),    
-    ClusterSpecList=lib_etcd_cluster:git_clone_load(),
-    Ok_ClusterSpec=[X||{ok,X}<-ClusterSpecList],
-    FailedToCreate=[X||{error,X}<-ClusterSpecList],
-
-    ?LOG_NOTICE("Successfully created  ",[Ok_ClusterSpec]),
-    case FailedToCreate of
+      case lists:delete(node(),sd:get_node(etcd)) of
 	[]->
-	    ok;
-	_->
-	    ?LOG_NOTICE("Failed to create   ",[FailedToCreate])
-    end,
+	      ok=lib_etcd_cluster:create_table(),    
+	      ClusterSpecList=lib_etcd_cluster:git_clone_load(),
+	      Ok_ClusterSpec=[X||{ok,X}<-ClusterSpecList],
+	      FailedToCreate=[X||{error,X}<-ClusterSpecList],
+	      ?LOG_NOTICE("Successfully created  ",[Ok_ClusterSpec]),
+	      case FailedToCreate of
+		  []->
+		      ok;
+		  _->
+		      ?LOG_NOTICE("Failed to create   ",[FailedToCreate])
+	      end;
+	  _->
+	      ok
+      end,
     {ok, #state{}}.
 
 

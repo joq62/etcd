@@ -33,15 +33,8 @@ start()->
     ok=etcd_lock_test:start(node()),
     ok=etcd_deployment_test:start(),
     ok=etcd_cluster_test:start(),
-    ok=etcd_cluster_to_deploy_test:start(),
     ok=etcd_paas_config_test:start(),
-%    ok=cluster_test:start(),
-%    ok=cluster_spec_test:start(),
-%    ok=deploy_test:start(),
-%    ok=lock_test:start(),
-    
-%    ok=provider_test:start(node()),
-%    ok=dist_test:start(),
+    ok=dist_test:start(),
                  
    
     io:format("Test OK !!! ~p~n",[?MODULE]),

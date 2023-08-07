@@ -126,17 +126,21 @@ stop()-> gen_server:call(?SERVER, {stop},infinity).
 	  ignore.
 
 init([]) ->
-    ok=lib_etcd_deployment:create_table(),    
-    DeploymentNameList=lib_etcd_deployment:git_clone_load(),
-    Ok_DeploymentNameList=[X||{ok,X}<-DeploymentNameList],
-    FailedToCreate=[X||{error,X}<-DeploymentNameList],
-
-    ?LOG_NOTICE("Successfully created  ",[Ok_DeploymentNameList]),
-    case FailedToCreate of
+    case lists:delete(node(),sd:get_node(etcd)) of
 	[]->
-	    ok;
+	    ok=lib_etcd_deployment:create_table(),    
+	    DeploymentNameList=lib_etcd_deployment:git_clone_load(),
+	    Ok_DeploymentNameList=[X||{ok,X}<-DeploymentNameList],
+	    FailedToCreate=[X||{error,X}<-DeploymentNameList],
+	    ?LOG_NOTICE("Successfully created  ",[Ok_DeploymentNameList]),
+	    case FailedToCreate of
+		[]->
+		    ok;
+		_->
+		    ?LOG_NOTICE("Failed to create   ",[FailedToCreate])
+	    end;
 	_->
-	    ?LOG_NOTICE("Failed to create   ",[FailedToCreate])
+	    ok
     end,
     {ok, #state{}}.
 
