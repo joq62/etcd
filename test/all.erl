@@ -29,7 +29,7 @@ start()->
     
        % dbetcd
     ok=etcd_host_test:start(node()),
-    ok=etcd_provider_test:start(node()),
+    ok=etcd_application_test:start(node()),
     ok=etcd_lock_test:start(node()),
     ok=etcd_deployment_test:start(),
     ok=etcd_cluster_test:start(),

@@ -51,14 +51,14 @@ read_specs_test()->
     {
      "test_c50",
      [
-      {"control","c50"},{"etcd","c50"},
+      {"log","c50"},{"control","c50"},{"etcd","c50"},
       {"adder","c50"},{"divi","c50"}
      ]
     }=etcd_deployment:get_info(?TestDeployment),
     
     {ok,
      [
-      {"control","c50"},{"etcd","c50"},
+      {"log","c50"},{"control","c50"},{"etcd","c50"},
       {"adder","c50"},{"divi","c50"}
      ]
     }=etcd_deployment:get_deployment_list(?TestDeployment),

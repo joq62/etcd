@@ -286,7 +286,7 @@ format_status(_Opt, Status) ->
 create_records([],_Num,_CookieStr,Acc)->
     Acc;
 create_records([{Provider,Host}|T],N,CookieStr,Acc) ->
-    {ok,App}=etcd_provider:get_app(Provider),
+    {ok,App}=etcd_application:get_app(Provider),
     NStr=integer_to_list(N),
     NodeName=CookieStr++"_"++NStr,
     Node=list_to_atom(NodeName++"@"++Host),
