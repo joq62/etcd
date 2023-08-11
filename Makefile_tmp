@@ -5,12 +5,11 @@ all:
 	rm -rf logs;
 	rm -rf ebin
 	rm -rf rebar.lock;
-#	mkdir ebin;		
+	mkdir ebin;		
 	rebar3 compile;	
-#	cp _build/default/lib/*/ebin/* ebin;
+	cp _build/default/lib/*/ebin/* ebin;
 	rm -rf _build*;
-#	git add -f *;
-	git add *;
+	git add -f *;
 	git commit -m $(m);
 	git push;
 	echo Ok there you go!
