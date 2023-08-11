@@ -5,7 +5,7 @@
 %%% @end
 %%% Created : 21 Dec 2022 by c50 <joq62@c50>
 
--module(lib_etcd_provider). 
+-module(lib_etcd_application).  
 
 %% --------------------------------------------------------------------
 %% Include files

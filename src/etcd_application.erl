@@ -6,8 +6,8 @@
 %%% @end
 %%% Created : 18 Apr 2023 by c50 <joq62@c50>
 %%%-------------------------------------------------------------------
--module(etcd_provider).
- 
+-module(etcd_application).
+  
 -behaviour(gen_server).
 %%--------------------------------------------------------------------
 %% Include 
@@ -205,8 +205,8 @@ stop()-> gen_server:call(?SERVER, {stop},infinity).
 init([]) ->
     case lists:delete(node(),sd:get_node(etcd)) of
 	[]->
-	    ok=lib_etcd_provider:create_table(),    
-	    ProviderList=lib_etcd_provider:git_clone_load(),
+	    ok=lib_etcd_application:create_table(),    
+	    ProviderList=lib_etcd_application:git_clone_load(),
 	    Ok_ProviderList=[X||{ok,X}<-ProviderList],
 	    FailedToCreate=[X||{error,X}<-ProviderList],
 	    ?LOG_NOTICE("Successfully created  ",[Ok_ProviderList]),
@@ -228,28 +228,28 @@ init([]) ->
 %% @end
 %%--------------------------------------------------------------------
 handle_call({all_providers}, _From, State) ->
-    Reply=lib_etcd_provider:get_all_id(),
+    Reply=lib_etcd_application:get_all_id(),
     {reply, Reply, State};
 
 
 handle_call({get_info,ApplName}, _From, State) ->
-    Reply=lib_etcd_provider:get_info(ApplName),
+    Reply=lib_etcd_application:get_info(ApplName),
     {reply, Reply, State};
 
 handle_call({get_vsn,ApplName}, _From, State) ->
-    Reply=lib_etcd_provider:get(vsn,ApplName),
+    Reply=lib_etcd_application:get(vsn,ApplName),
     {reply, Reply, State};
 
 handle_call({get_app,ApplName}, _From, State) ->
-    Reply=lib_etcd_provider:get(app,ApplName),
+    Reply=lib_etcd_application:get(app,ApplName),
     {reply, Reply, State};
 
 handle_call({get_erl_args,ApplName}, _From, State) ->
-    Reply=lib_etcd_provider:get(erl_args,ApplName),
+    Reply=lib_etcd_application:get(erl_args,ApplName),
     {reply, Reply, State};
 
 handle_call({get_git_path,ApplName}, _From, State) ->
-    Reply=lib_etcd_provider:get(git_path,ApplName),
+    Reply=lib_etcd_application:get(git_path,ApplName),
     {reply, Reply, State};
 
 
