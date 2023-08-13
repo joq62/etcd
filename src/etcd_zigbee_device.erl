@@ -27,6 +27,7 @@
 	 get_type/1,
 	 get_device_type/1,
 	 get_module/1,
+	 member/1,
 
 	 ping/0,
 	 stop/0
@@ -55,6 +56,16 @@
 all_devices()->
     gen_server:call(?SERVER, {all_devices},infinity).
     
+
+%%--------------------------------------------------------------------
+%% @doc
+%% Get all information related to host HostName  
+%% @end
+%%--------------------------------------------------------------------
+-spec member(Name :: string()) -> Member :: boolean() | {error, Error :: term()}.
+
+member(Name)->
+    gen_server:call(?SERVER, {member,Name},infinity).
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -182,6 +193,10 @@ handle_call({all_devices}, _From, State) ->
     Reply=lib_etcd_zigbee_device:get_all_id(),
     {reply, Reply, State};
 
+
+handle_call({member,Name}, _From, State) ->
+    Reply=lib_etcd_zigbee_device:member(Name),
+    {reply, Reply, State};
 
 handle_call({get_info,Name}, _From, State) ->
     Reply=lib_etcd_zigbee_device:get_info(Name),
