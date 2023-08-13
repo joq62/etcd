@@ -25,6 +25,7 @@
 	 get_modelid/1,
 	 get_state/1,
 	 get_type/1,
+	 get_device_type/1,
 	 get_module/1,
 
 	 ping/0,
@@ -92,6 +93,16 @@ get_state(Name)->
 
 get_type(Name)->
     gen_server:call(?SERVER, {get_type,Name},infinity).
+
+%%--------------------------------------------------------------------
+%% @doc
+%% get ip adress from host HostName
+%% @end
+%%--------------------------------------------------------------------
+-spec get_device_type(Name :: string()) -> {ok,Type :: string()} | {error, Error :: term()}.
+
+get_device_type(Name)->
+    gen_server:call(?SERVER, {get_device_type,Name},infinity).
 %%--------------------------------------------------------------------
 %% @doc
 %% get ip adress from host HostName
@@ -186,6 +197,10 @@ handle_call({get_state,Name}, _From, State) ->
 
 handle_call({get_type,Name}, _From, State) ->
     Reply=lib_etcd_zigbee_device:get(type,Name),
+    {reply, Reply, State};
+
+handle_call({get_device_type,Name}, _From, State) ->
+    Reply=lib_etcd_zigbee_device:get(device_type,Name),
     {reply, Reply, State};
 
 handle_call({get_module,Name}, _From, State) ->

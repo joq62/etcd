@@ -7,6 +7,7 @@
 -record(?RECORD,{
 		 name,
 		 modelid,
+		 device_type,
 		 state,
 		 type,
 		 module

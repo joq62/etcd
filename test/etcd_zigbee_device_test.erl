@@ -60,6 +60,7 @@ read_specs_test(Node)->
     {
      <<"light_color_joakim">>,
      <<"TRADFRI bulb E27 CWS 806lm">>,
+     <<"lights">>,
      [<<"bri">>,<<"colormode">>,<<"ct">>,<<"xy">>,<<"effect">>,<<"hue">>,<<"alert">>,<<"on">>,<<"reachable">>],
      <<"Extended color light">>,
      tradfri_bulb_E27_cws_806lm
@@ -68,6 +69,7 @@ read_specs_test(Node)->
     {ok,<<"TRADFRI bulb E27 CWS 806lm">>}=rpc:call(Node,etcd_zigbee_device,get_modelid,[?NameTest],5000),
     {ok, [<<"bri">>,<<"colormode">>,<<"ct">>,<<"xy">>,<<"effect">>,<<"hue">>,<<"alert">>,<<"on">>,<<"reachable">>]}=rpc:call(Node,etcd_zigbee_device,get_state,[?NameTest],5000),
     {ok,<<"Extended color light">>}=rpc:call(Node,etcd_zigbee_device,get_type,[?NameTest],5000),
+    {ok,<<"lights">>}=rpc:call(Node,etcd_zigbee_device,get_device_type,[?NameTest],5000),
     {ok,tradfri_bulb_E27_cws_806lm}=rpc:call(Node,etcd_zigbee_device,get_module,[?NameTest],5000),
   
    

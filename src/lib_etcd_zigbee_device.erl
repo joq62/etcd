@@ -16,7 +16,7 @@
 %% External exports
 
 -export([create_table/0,create_table/2,add_node/2]).
--export([create/5,delete/1]).
+-export([create/6,delete/1]).
 -export([get_info/1,get_all/0,get/2,get_all_id/0]).
 -export([do/1]).
 -export([member/1]).
@@ -60,10 +60,11 @@ add_node(Node,StorageType)->
 %% @spec
 %% @end
 %%--------------------------------------------------------------------
-create(Name,ModelId,State,Type,Module)->
+create(Name,ModelId,DeviceType,State,Type,Module)->
     Record=#?RECORD{
 		    name=Name,
 		    modelid=ModelId,
+		    device_type=DeviceType,
 		    state=State,
 		    type=Type,
 		    module=Module
@@ -109,7 +110,7 @@ member(Name)->
 
 get_all() ->
     Z=do(qlc:q([X || X <- mnesia:table(?TABLE)])),
-    [{R#?RECORD.name,R#?RECORD.modelid,R#?RECORD.state,
+    [{R#?RECORD.name,R#?RECORD.modelid,R#?RECORD.device_type,R#?RECORD.state,
       R#?RECORD.type,R#?RECORD.module}||R<-Z].
 
 get_info(Name)->
@@ -121,6 +122,7 @@ get_info(Name)->
 	       _->
 		   [Info]=[{R#?RECORD.name,
 			    R#?RECORD.modelid,
+			    R#?RECORD.device_type,
 			    R#?RECORD.state,
 			    R#?RECORD.type,
 			    R#?RECORD.module}||R<-Z],
@@ -144,6 +146,8 @@ get(Key,Name)->
 			   {ok,R#?RECORD.state};
 		       type->
 			   {ok,R#?RECORD.type};
+		       device_type->
+			   {ok,R#?RECORD.device_type};
 		       module->
 			   {ok,R#?RECORD.module};
 		       Err ->
@@ -243,10 +247,11 @@ from_file([FileName|T],Dir,Acc)->
 			{ok,[{zigbee_device,Map}]}->
 			   Name=maps:get(<<"name">>,Map),
 			   ModelId=maps:get(<<"modelid">>,Map),
+			   DeviceType=maps:get(<<"device_type">>,Map),
 			   State=maps:get(<<"state">>,Map),
 			   Type=maps:get(<<"type">>,Map),
 			   Module=maps:get(<<"module">>,Map),
-			   case create(Name,ModelId,State,Type,Module) of
+			   case create(Name,ModelId,DeviceType,State,Type,Module) of
 			       {atomic,ok}->
 				   [{ok,FileName}|Acc];
 			       {error,Reason}->
