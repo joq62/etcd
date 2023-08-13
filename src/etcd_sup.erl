@@ -45,7 +45,9 @@ init([]) ->
 		  #{id=>etcd_deployment_record,
 		    start=>{etcd_deployment_record,start_link,[]}},
 		  #{id=>etcd_paas_config,
-		    start=>{etcd_paas_config,start_link,[]}}
+		    start=>{etcd_paas_config,start_link,[]}},
+		  #{id=>etcd_zigbee_device,
+		    start=>{etcd_zigbee_device,start_link,[]}}
 		  
 		
 		 ],
