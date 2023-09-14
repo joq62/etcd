@@ -54,9 +54,10 @@ test_2()->
 
   
   %% N1 ---------------------------------------------------------------------------------
-    ok=rpc:call(N1,application,load,[etcd],5000),
-    ok=rpc:call(N1,application,start,[etcd],5000),
-    pong=rpc:call(N1,etcd,ping,[],5000),
+    ok=start_node(N1,etcd),
+%    ok=rpc:call(N1,application,load,[etcd],5000),
+ %   ok=rpc:call(N1,application,start,[etcd],5000),
+  %  pong=rpc:call(N1,etcd,ping,[],5000),
     ['do_test@c50','n0@c50']=lists:sort(rpc:call(N1,mnesia,system_info,[db_nodes],5000)),
     ok=rpc:call(N1,etcd_lock,create,[orchestrate_lock],5000),
    % rpc:call(N1,mnesia,system_info,[],5000),
@@ -72,10 +73,11 @@ test_2()->
     
 
     %% N2 -----------------------------------------------------------------------------
-    ok=rpc:call(N2,application,load,[etcd],5000),
-    ok=rpc:call(N2,application,start,[etcd],5000),
-    pong=rpc:call(N1,etcd,ping,[],5000),
-    pong=rpc:call(N2,etcd,ping,[],5000),
+    ok=start_node(N2,etcd),
+ %   ok=rpc:call(N2,application,load,[etcd],5000),
+ %   ok=rpc:call(N2,application,start,[etcd],5000),
+%    pong=rpc:call(N1,etcd,ping,[],5000),
+%    pong=rpc:call(N2,etcd,ping,[],5000),
     ['do_test@c50','n0@c50','n1@c50']=lists:sort(rpc:call(N2,mnesia,system_info,[db_nodes],5000)),
     
     [etcd_lock,orchestrate_lock]=rpc:call(N2,etcd_lock,all_locks,[],5000),
@@ -92,9 +94,11 @@ test_2()->
 
 
   %% N3 -----------------------------------------------------------------------------------
-    ok=rpc:call(N3,application,load,[etcd],5000),
-    ok=rpc:call(N3,application,start,[etcd],5000),
-    pong=rpc:call(N3,etcd,ping,[],5000),
+
+    ok=start_node(N3,etcd),
+  %  ok=rpc:call(N3,application,load,[etcd],5000),
+  %  ok=rpc:call(N3,application,start,[etcd],5000),
+  %  pong=rpc:call(N3,etcd,ping,[],5000),
 
     [
      'do_test@c50',
@@ -120,7 +124,7 @@ test_2()->
  %% N4 -----------------------------------------------------------------------------------------
    %% kill N3 
     io:format("kill N3  ~p~n",[{?MODULE,?FUNCTION_NAME,?LINE}]),
-     [etcd_lock,orchestrate_lock]=rpc:call(N3,etcd_lock,all_locks,[],5000),
+    [etcd_lock,orchestrate_lock]=rpc:call(N3,etcd_lock,all_locks,[],5000),
     {ok,TransActionsId_40}=rpc:call(N3,etcd_lock,try_lock,[orchestrate_lock,3000],5000),
     rpc:call(N3,init,stop,[],5000),
     true=vm_appl_control:check_stopped_node(N3),
@@ -135,8 +139,7 @@ test_2()->
     Ebin=filename:join(Cwd,"test_ebin"),
     true=rpc:call(N31,code,add_patha,[Ebin],5000), 
 
-    ok=rpc:call(N31,application,start,[etcd],5000), 
-    pong=rpc:call(N31,etcd,ping,[],5000),
+    ok=start_node(N31,etcd),
     io:format("N3 restarted  ~p~n",[{?MODULE,?LINE}]),
 
     locked=rpc:call(N1,etcd_lock,try_lock,[orchestrate_lock,3000],5000),
@@ -162,7 +165,8 @@ test_2()->
 
 setup()->
     io:format("Start ~p~n",[{?MODULE,?FUNCTION_NAME}]),
-      ok=test_nodes:start_nodes(),
+  %  application:stop(etcd),
+    ok=test_nodes:start_nodes(),
     {ok,Cwd}=file:get_cwd(),
     TestEbin=filename:join(Cwd,"test_ebin"),
     Ebin=filename:join(Cwd,"ebin"),
@@ -171,4 +175,21 @@ setup()->
     [true,true,true]=[rpc:call(N,code,add_patha,[Ebin],5000)||N<-test_nodes:get_nodes()],    
     
     
+    ok.
+
+
+start_node(Node,App)->
+    ok=rpc:call(Node,application,load,[log],5000),
+    ok=rpc:call(Node,application,start,[log],5000),
+    pong=rpc:call(Node,log,ping,[],5000),
+
+    ok=rpc:call(Node,application,load,[rd],5000),
+    ok=rpc:call(Node,application,start,[rd],5000),
+    pong=rpc:call(Node,rd,ping,[],5000),
+
+    ok=rpc:call(Node,application,load,[App],5000),
+    ok=rpc:call(Node,application,start,[App],5000),
+    pong=rpc:call(Node,App,ping,[],5000),
+    timer:sleep(1*1000),
+
     ok.

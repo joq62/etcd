@@ -18,7 +18,7 @@
  
 %% resource_discovery 
 -define(LocalResourceTuples,[{etcd,node()}]).
--define(TargetTypes,[]).
+-define(TargetTypes,[etcd]).
 
 %% API
 -export([
@@ -86,30 +86,32 @@ stop()-> gen_server:call(?SERVER, {stop},infinity).
 	  ignore.
 
 init([]) ->
-  
-    %% Announce to resource_discovery
+ %% Announce to resource_discovery
     Interval=10*1000,
     Iterations=10,
     true=check_rd_running(Interval,Iterations,false),
     [rd:add_local_resource(ResourceType,Resource)||{ResourceType,Resource}<-?LocalResourceTuples],
     [rd:add_target_resource_type(TargetType)||TargetType<-?TargetTypes],
     rd:trade_resources(),
-    
-    
-    
+      
     %% ----------------------
 
    %  case lists:delete(node(),sd:get_node(etcd)) of
-    
-    case lists:delete(node(),rd:fetch_resources(etcd)) of
+   
+  %  case lists:delete(node(),rd:fetch_resources(etcd)) of
+    DbEtcdResources=[Node||Node<-nodes(),
+			   pong=:=rpc:call(Node,etcd,ping,[],5000)],
+    case DbEtcdResources  of
 	[]->
 	    ?LOG_NOTICE("First Dbase Node ",[node()]),	  
 	    lib_db:dynamic_db_init([]);
 	DbEtcdResources ->
+	    io:format("DbEtcdResources ~p~n",[{node(),DbEtcdResources,?MODULE,?LINE}]),
 	    ?LOG_NOTICE("Added Dbase Node ",[node(),DbEtcdResources]),	  
 	    lib_db:dynamic_db_init(DbEtcdResources),
 	    ok
-    end,  
+    end,   
+      
     ?LOG_NOTICE("Server started ",[]),
     
     {ok, #state{}}.
@@ -151,6 +153,21 @@ handle_cast(UnMatchedSignal, State) ->
 	  {noreply, NewState :: term(), Timeout :: timeout()} |
 	  {noreply, NewState :: term(), hibernate} |
 	  {stop, Reason :: normal | term(), NewState :: term()}.
+
+
+handle_info(timeout, State) ->
+    case lists:delete(node(),rd:fetch_resources(etcd)) of
+	[]->
+	    ?LOG_NOTICE("First Dbase Node ",[node()]),	  
+	    lib_db:dynamic_db_init([]);
+	DbEtcdResources ->
+	    io:format("DbEtcdResources ~p~n",[{node(),DbEtcdResources,?MODULE,?LINE}]),
+	    ?LOG_NOTICE("Added Dbase Node ",[node(),DbEtcdResources]),	  
+	    lib_db:dynamic_db_init(DbEtcdResources),
+	    ok
+    end,  
+    {noreply, State};
+
 handle_info(Info, State) ->
     io:format("unmatched_signal ~p~n",[{Info,?MODULE,?LINE}]),
     {noreply, State}.

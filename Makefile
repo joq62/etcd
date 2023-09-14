@@ -41,6 +41,8 @@ eunit:
 #	Application speciic
 #	test
 	mkdir test_ebin;
+	erlc -I ../log/include -I include -I /home/joq62/erlang/include -o test_ebin ../log/src/*.erl;
+	cp ../log/src/log.app.src test_ebin/log.app;
 	erlc -I ../resource_discovery/include -I include -I /home/joq62/erlang/include -o test_ebin ../resource_discovery/src/*.erl;
 	cp ../resource_discovery/src/rd.app.src test_ebin/rd.app;
 	erlc -I include -I /home/joq62/erlang/include -o test_ebin ../../misc/paas/control/src/vm_appl_control.erl;
@@ -54,7 +56,6 @@ eunit:
 	rm -rf _build*;
 #	Application specific
 	erl -pa ebin -pa test_ebin\
-	    -pa ../log/ebin\
 	    -sname do_test\
 	    -run $(m) start\
 	    -setcookie test_cookie
