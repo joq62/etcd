@@ -16,10 +16,14 @@
 
 -include("log.api").
  
+%% resource_discovery 
+-define(LocalResourceTuples,[{etcd,node()}]).
+-define(TargetTypes,[]).
 
 %% API
 -export([
 	 ping/0,
+	 start/0,
 	 stop/0
 	]).
 
@@ -41,7 +45,8 @@
 %% @spec
 %% @end
 %%--------------------------------------------------------------------
-
+start()->
+    application:start(?MODULE).
 %%--------------------------------------------------------------------
 %% @doc
 %% @spec
@@ -81,13 +86,28 @@ stop()-> gen_server:call(?SERVER, {stop},infinity).
 	  ignore.
 
 init([]) ->
-    case lists:delete(node(),sd:get_node(etcd)) of
+  
+    %% Announce to resource_discovery
+    Interval=10*1000,
+    Iterations=10,
+    true=check_rd_running(Interval,Iterations,false),
+    [rd:add_local_resource(ResourceType,Resource)||{ResourceType,Resource}<-?LocalResourceTuples],
+    [rd:add_target_resource_type(TargetType)||TargetType<-?TargetTypes],
+    rd:trade_resources(),
+    
+    
+    
+    %% ----------------------
+
+   %  case lists:delete(node(),sd:get_node(etcd)) of
+    
+    case lists:delete(node(),rd:fetch_resources(etcd)) of
 	[]->
 	    ?LOG_NOTICE("First Dbase Node ",[node()]),	  
 	    lib_db:dynamic_db_init([]);
-	DbEtcdNode ->
-	    ?LOG_NOTICE("Added Dbase Node ",[node(),DbEtcdNode]),	  
-	    lib_db:dynamic_db_init(DbEtcdNode),
+	DbEtcdResources ->
+	    ?LOG_NOTICE("Added Dbase Node ",[node(),DbEtcdResources]),	  
+	    lib_db:dynamic_db_init(DbEtcdResources),
 	    ok
     end,  
     ?LOG_NOTICE("Server started ",[]),
@@ -178,3 +198,21 @@ format_status(_Opt, Status) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
+check_rd_running(_Interval,N_,true)->
+    true;
+check_rd_running(Interval,0,true)->
+    true;
+check_rd_running(Interval,0,false)->
+    false;
+check_rd_running(Interval,N,IsRunning)->
+    case rpc:call(node(),rd,ping,[],5000) of
+	pong->
+	    NewIsRunning=true,
+	    NewN=N;
+	_->
+	    timer:sleep(Interval),
+	    NewIsRunning=false,
+	    NewN=N-1
+    end,
+    check_rd_running(Interval,NewN,NewIsRunning).
+	 

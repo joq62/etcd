@@ -203,7 +203,7 @@ stop()-> gen_server:call(?SERVER, {stop},infinity).
 	  ignore.
 
 init([]) ->
-    case lists:delete(node(),sd:get_node(etcd)) of
+    case lists:delete(node(),rd:fetch_resources(etcd)) of
 	[]->
 	    ok=lib_etcd_application:create_table(),    
 	    ProviderList=lib_etcd_application:git_clone_load(),

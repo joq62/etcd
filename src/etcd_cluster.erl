@@ -168,7 +168,7 @@ stop()-> gen_server:call(?SERVER, {stop},infinity).
 	  ignore.
 
 init([]) ->
-      case lists:delete(node(),sd:get_node(etcd)) of
+      case lists:delete(node(),rd:fetch_resources(etcd)) of
 	[]->
 	      ok=lib_etcd_cluster:create_table(),    
 	      ClusterSpecList=lib_etcd_cluster:git_clone_load(),

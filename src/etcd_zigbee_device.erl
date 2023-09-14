@@ -163,7 +163,7 @@ stop()-> gen_server:call(?SERVER, {stop},infinity).
 	  ignore.
 
 init([]) ->
-    case lists:delete(node(),sd:get_node(etcd)) of
+    case lists:delete(node(),rd:fetch_resources(etcd)) of
 	[]->
 	    ok=lib_etcd_zigbee_device:create_table(),    
 	    SpecList=lib_etcd_zigbee_device:git_clone_load(),

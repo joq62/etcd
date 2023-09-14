@@ -59,8 +59,8 @@ start()->
 
 setup()->
     io:format("Start ~p~n",[{?MODULE,?FUNCTION_NAME}]),
-    ok=application:start(log),
-    pong=log:ping(),
+    ok=application:start(rd),
+    pong=rd:ping(),
 
     ok=application:start(etcd),
     pong=etcd:ping(),
