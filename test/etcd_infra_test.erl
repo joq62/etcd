@@ -9,13 +9,14 @@
 %%% Pod consits beams from all services, app and app and sup erl.
 %%% The setup of envs is
 %%% -------------------------------------------------------------------
--module(all).      
+-module(etcd_infra_test).       
  
 -export([start/0]).
 %% --------------------------------------------------------------------
 %% Include files
 %% --------------------------------------------------------------------
 
+-define(InfraTest,"basic").
 
 %% --------------------------------------------------------------------
 %% Function: available_hosts()
@@ -23,26 +24,40 @@
 %% Returns: List({HostId,Ip,SshPort,Uid,Pwd}
 %% --------------------------------------------------------------------
 start()->
-   
-    ok=setup(),
+    io:format("Start ~p~n",[{?MODULE,?FUNCTION_NAME}]),
+    Node=node(),
+    ok=setup(Node),
+    ok=read_specs_test(Node),
+      
+    io:format("Stop OK !!! ~p~n",[{?MODULE,?FUNCTION_NAME}]),
 
+    ok.
+
+
+
+%% --------------------------------------------------------------------
+%% Function: available_hosts()
+%% Description: Based on hosts.config file checks which hosts are avaible
+%% Returns: List({HostId,Ip,SshPort,Uid,Pwd}
+%% --------------------------------------------------------------------
+read_specs_test(Node)->
+    io:format("Start ~p~n",[{?MODULE,?FUNCTION_NAME}]),
     
-       % dbetcd
-    ok=etcd_infra_test:start(),
-    ok=etcd_zigbee_device_test:start(),
-    ok=etcd_host_test:start(node()),
-    ok=etcd_application_test:start(node()),
-    ok=etcd_lock_test:start(node()),
-    ok=etcd_deployment_test:start(),
-    ok=etcd_cluster_test:start(),
-    ok=etcd_paas_config_test:start(),
-    ok=dist_test:start(),
+    AllInfra=lists:sort(rpc:call(Node,etcd_infra,all_infra,[],5000)),
+    true=lists:member(?InfraTest,AllInfra),
+
+    {
+     "basic",
+     "a",
+     [{"c50",9},{"c200",10},{"c201",11},{"c202",12}]
+    }=rpc:call(Node,etcd_infra,get_info,[?InfraTest],5000),
+    
+    {ok,"a"}=rpc:call(Node,etcd_infra,get_cookie_str,[?InfraTest],5000),
+    {ok,[{"c50",9},{"c200",10},{"c201",11},{"c202",12}]}=rpc:call(Node,etcd_infra,get_num_workers,[?InfraTest],5000),
+    {ok,10}=rpc:call(Node,etcd_infra,get_num_workers,[?InfraTest,"c200"],5000),
    
-                 
-   
-    io:format("Test OK !!! ~p~n",[?MODULE]),
-    timer:sleep(2000),
-    init:stop(),
+    {error,[eexist,"glurk",lib_etcd_infra,_]}=rpc:call(Node,etcd_infra,get_cookie_str,["glurk"],5000),
+ 
     ok.
 
 %% --------------------------------------------------------------------
@@ -51,18 +66,9 @@ start()->
 %% Returns: List({HostId,Ip,SshPort,Uid,Pwd}
 %% --------------------------------------------------------------------
 
-%% --------------------------------------------------------------------
-%% Function: available_hosts()
-%% Description: Based on hosts.config file checks which hosts are avaible
-%% Returns: List({HostId,Ip,SshPort,Uid,Pwd}
-%% --------------------------------------------------------------------
 
-
-setup()->
+setup(Node)->
     io:format("Start ~p~n",[{?MODULE,?FUNCTION_NAME}]),
-    ok=application:start(rd),
-    pong=rd:ping(),
-
-    ok=application:start(etcd),
-    pong=etcd:ping(),
+    pong=rpc:call(Node,etcd,ping,[],5000),
+   
     ok.

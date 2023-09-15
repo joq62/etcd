@@ -32,6 +32,8 @@ init([]) ->
     ChildSpecs = [
 		  #{id=>etcd,
 		    start=>{etcd,start_link,[]}},
+		  #{id=>etcd_infra,
+		    start=>{etcd_infra,start_link,[]}},
 		  #{id=>etcd_host,
 		    start=>{etcd_host,start_link,[]}},
 		  #{id=>etcd_application,
