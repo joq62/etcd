@@ -23,6 +23,7 @@
 	 all_infra/0,
 	 get_info/1,
 
+	 get_connect_nodes/1,
 	 get_cookie_str/1,
 	 get_num_workers/1,
 	 get_num_workers/2,
@@ -65,6 +66,15 @@ all_infra()->
 get_info(InfraSpec)->
     gen_server:call(?SERVER, {get_info,InfraSpec},infinity).
 
+%%--------------------------------------------------------------------
+%% @doc
+%% Get all information related to host HostName  
+%% @end
+%%--------------------------------------------------------------------
+-spec get_connect_nodes(InfraSpec :: string()) -> {ok,ConnectNodes :: term()} | {error, Error :: term()}.
+
+get_connect_nodes(InfraSpec)->
+    gen_server:call(?SERVER, {get_connect_nodes,InfraSpec},infinity).
 %%--------------------------------------------------------------------
 %% @doc
 %% Get all information related to host HostName  
@@ -168,6 +178,10 @@ handle_call({all_infra}, _From, State) ->
 
 handle_call({get_info,InfraSpec}, _From, State) ->
     Reply=lib_etcd_infra:get_info(InfraSpec),
+    {reply, Reply, State};
+
+handle_call({get_connect_nodes,InfraSpec}, _From, State) ->
+    Reply=lib_etcd_infra:get(connect_nodes,InfraSpec),
     {reply, Reply, State};
 
 handle_call({get_cookie_str,InfraSpec}, _From, State) ->

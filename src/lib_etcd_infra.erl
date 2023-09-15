@@ -15,7 +15,7 @@
 %% External exports
 
 -export([create_table/0,create_table/2,add_node/2]).
--export([create/3,delete/1]).
+-export([create/4,delete/1]).
 -export([get_info/1,get_all/0,get/2,get/3,get_all_id/0]).
 -export([do/1]).
 -export([member/1]).
@@ -59,9 +59,10 @@ add_node(Node,StorageType)->
 %% @spec
 %% @end
 %%--------------------------------------------------------------------
-create(SpecId,CookieStr,NumWorkers)->
+create(SpecId,ConnectNodes,CookieStr,NumWorkers)->
     Record=#?RECORD{
 		    spec_id=SpecId,
+		    connect_nodes=ConnectNodes,
 		    cookie_str=CookieStr,
 		    num_workers=NumWorkers
 		   },
@@ -111,7 +112,7 @@ member(SpecId)->
 
 get_all() ->
     Z=do(qlc:q([X || X <- mnesia:table(?TABLE)])),
-    [{R#?RECORD.spec_id,R#?RECORD.cookie_str,R#?RECORD.num_workers}||R<-Z].
+    [{R#?RECORD.spec_id,R#?RECORD.connect_nodes,R#?RECORD.cookie_str,R#?RECORD.num_workers}||R<-Z].
 
 get_info(SpecId)->
     Z=do(qlc:q([X || X <- mnesia:table(?TABLE),		
@@ -120,7 +121,7 @@ get_info(SpecId)->
 	       []->
 		  [];
 	       _->
-		   [Info]=[{R#?RECORD.spec_id,R#?RECORD.cookie_str,
+		   [Info]=[{R#?RECORD.spec_id,R#?RECORD.connect_nodes,R#?RECORD.cookie_str,
 			    R#?RECORD.num_workers}||R<-Z],
 		   Info
 	   end,
@@ -156,6 +157,8 @@ get(Key,SpecId)->
 		   case  Key of
 		       spec_id->
 			   {ok,R#?RECORD.spec_id};
+		       connect_nodes->
+			   {ok,R#?RECORD.connect_nodes};
 		       cookie_str->
 			   {ok,R#?RECORD.cookie_str};
 		       num_workers->
@@ -254,10 +257,11 @@ from_file([FileName|T],Dir,Acc)->
 			{error,Reason}->
 			    [{error,[Reason,FileName,Dir,?MODULE,?LINE]}|Acc];
 			{ok,[{infra_spec,Info}]}->
-			    {spec_id,SpecId}=lists:keyfind(spec_id,1,Info),
+			   {spec_id,SpecId}=lists:keyfind(spec_id,1,Info),
+			   {connect_nodes,ConnectNodes}=lists:keyfind(connect_nodes,1,Info),
 			    {cookie_str,CookieStr}=lists:keyfind(cookie_str,1,Info),
 			    {num_workers,NumWorkers}=lists:keyfind(num_workers,1,Info),
-			   case create(SpecId,CookieStr,NumWorkers) of
+			   case create(SpecId,ConnectNodes,CookieStr,NumWorkers) of
 				ok ->
 				    [{ok,FileName}|Acc];
 				{error,Reason}->

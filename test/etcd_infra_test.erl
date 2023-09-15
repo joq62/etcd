@@ -48,10 +48,12 @@ read_specs_test(Node)->
 
     {
      "basic",
+     ['control_a@c50','control_a@c200','control_a@c201','control_a@c202'],
      "a",
      [{"c50",9},{"c200",10},{"c201",11},{"c202",12}]
     }=rpc:call(Node,etcd_infra,get_info,[?InfraTest],5000),
     
+    {ok,['control_a@c50','control_a@c200','control_a@c201','control_a@c202']}=rpc:call(Node,etcd_infra,get_connect_nodes,[?InfraTest],5000),
     {ok,"a"}=rpc:call(Node,etcd_infra,get_cookie_str,[?InfraTest],5000),
     {ok,[{"c50",9},{"c200",10},{"c201",11},{"c202",12}]}=rpc:call(Node,etcd_infra,get_num_workers,[?InfraTest],5000),
     {ok,10}=rpc:call(Node,etcd_infra,get_num_workers,[?InfraTest,"c200"],5000),
