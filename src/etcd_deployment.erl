@@ -126,7 +126,7 @@ stop()-> gen_server:call(?SERVER, {stop},infinity).
 	  ignore.
 
 init([]) ->
-    case lists:delete(node(),rd:fetch_resources(etcd)) of
+    case lists:delete({etcd,node()},rd:fetch_resources(etcd)) of
 	[]->
 	    ok=lib_etcd_deployment:create_table(),    
 	    DeploymentNameList=lib_etcd_deployment:git_clone_load(),

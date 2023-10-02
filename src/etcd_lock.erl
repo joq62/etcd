@@ -176,7 +176,7 @@ stop()-> gen_server:call(?SERVER, {stop},infinity).
 	  ignore.
 
 init([]) ->
-    case lists:delete(node(),rd:fetch_resources(etcd)) of
+    case lists:delete({etcd,node()},rd:fetch_resources(etcd)) of
 	[]->
 	    ok=lib_etcd_lock:create_table();
 	_ ->

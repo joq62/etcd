@@ -17,7 +17,7 @@
 -include("log.api").
  
 %% resource_discovery 
--define(LocalResourceTuples,[{etcd,node()}]).
+-define(LocalResourceTuples,[{etcd,{etcd,node()}}]).
 -define(TargetTypes,[etcd]).
 
 %% API

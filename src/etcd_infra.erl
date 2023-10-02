@@ -145,7 +145,12 @@ stop()-> gen_server:call(?SERVER, {stop},infinity).
 	  ignore.
 
 init([]) ->
-    case lists:delete(node(),rd:fetch_resources(etcd)) of
+
+    EtcdNodes=lists:delete({etcd,node()},rd:fetch_resources(etcd)),
+    io:format("EtcdNodes ~p~n",[{EtcdNodes,?MODULE,?LINE}]),
+  
+  %  case lists:delete({etcd,node()},rd:fetch_resources(etcd)) of
+    case EtcdNodes of
 	[]->
 	    ok=lib_etcd_infra:create_table(),    
 	    SpecList=lib_etcd_infra:git_clone_load(),

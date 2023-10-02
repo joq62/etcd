@@ -48,20 +48,14 @@ read_specs_test()->
     AllDepSpecs=lists:sort(etcd_deployment:all_deployments()),
     true=lists:member(?TestDeployment,AllDepSpecs),
     
-    {
-     "test_c50",
+    {"test_c50",
      [
-      {"log","c50"},{"control","c50"},{"etcd","c50"},
-      {"adder","c50"},{"divi","c50"}
+      {"adder","c50"},{"divi","c50"},{"adder","c201"},{"divi","c201"}
      ]
     }=etcd_deployment:get_info(?TestDeployment),
     
-    {ok,
-     [
-      {"log","c50"},{"control","c50"},{"etcd","c50"},
-      {"adder","c50"},{"divi","c50"}
-     ]
-    }=etcd_deployment:get_deployment_list(?TestDeployment),
+   {ok,[{"adder","c50"},{"divi","c50"},{"adder","c201"},{"divi","c201"}]
+   }=etcd_deployment:get_deployment_list(?TestDeployment),
     
     {error,[eexist,"glurk",lib_etcd_deployment,_]}=etcd_deployment:get_deployment_list("glurk"),
     
