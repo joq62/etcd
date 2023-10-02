@@ -13,12 +13,8 @@
 %% Include 
 %%
 %%--------------------------------------------------------------------
-
+-include("etcd.resource_discovery").
 -include("log.api").
- 
-%% resource_discovery 
--define(LocalResourceTuples,[{etcd,{etcd,node()}}]).
--define(TargetTypes,[etcd]).
 
 %% API
 -export([
@@ -215,11 +211,11 @@ format_status(_Opt, Status) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
-check_rd_running(_Interval,N_,true)->
+check_rd_running(_Interval,_N,true)->
     true;
-check_rd_running(Interval,0,true)->
+check_rd_running(_Interval,0,true)->
     true;
-check_rd_running(Interval,0,false)->
+check_rd_running(_Interval,0,false)->
     false;
 check_rd_running(Interval,N,IsRunning)->
     case rpc:call(node(),rd,ping,[],5000) of
