@@ -44,6 +44,7 @@ read_specs_test(Node)->
     io:format("Start ~p~n",[{?MODULE,?FUNCTION_NAME}]),
     
     AllInfra=lists:sort(rpc:call(Node,etcd_infra,all_infra,[],5000)),
+    io:format("AllInfra ~p~n",[{AllInfra,?MODULE,?FUNCTION_NAME}]),
     true=lists:member(?InfraTest,AllInfra),
 
     {

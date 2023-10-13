@@ -50,8 +50,7 @@ init([]) ->
 		    start=>{etcd_paas_config,start_link,[]}},
 		  #{id=>etcd_zigbee_device,
 		    start=>{etcd_zigbee_device,start_link,[]}}
-		  
-		
+		  		
 		 ],
     {ok, {SupFlags, ChildSpecs}}.
 

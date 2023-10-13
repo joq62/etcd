@@ -228,12 +228,16 @@ git_clone()->
     GitPath=?GitPathSpecs,
     os:cmd("rm -rf "++GitDir),    
     ok=file:make_dir(GitDir),
-    GitResult=cmn_appl:git_clone_to_dir(node(),GitPath,GitDir),
-    Result=case filelib:is_dir(GitDir) of
-	       false->
-		   {error,[failed_to_clone,GitPath,GitResult]};
-	       true->
-		   {ok,TempDirName,GitDir}
+    Result=case cmn_appl:git_clone_to_dir(node(),GitPath,GitDir) of
+	       {error,Reason}->
+		   {error,Reason};
+	       GitResult->
+		   case filelib:is_dir(GitDir) of
+		       false->
+			   {error,[failed_to_clone,GitPath,GitResult]};
+		       true->
+			   {ok,TempDirName,GitDir}
+		   end
 	   end,
     Result.
 
