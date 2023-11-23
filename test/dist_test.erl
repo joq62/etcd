@@ -58,7 +58,7 @@ test_2()->
 %    ok=rpc:call(N1,application,load,[etcd],5000),
  %   ok=rpc:call(N1,application,start,[etcd],5000),
   %  pong=rpc:call(N1,etcd,ping,[],5000),
-    ['do_test@c50','n0@c50']=lists:sort(rpc:call(N1,mnesia,system_info,[db_nodes],5000)),
+    [control_a@c50,'n0@c50']=lists:sort(rpc:call(N1,mnesia,system_info,[db_nodes],5000)),
     ok=rpc:call(N1,etcd_lock,create,[orchestrate_lock],5000),
    % rpc:call(N1,mnesia,system_info,[],5000),
     [etcd_lock,orchestrate_lock]=rpc:call(N1,etcd_lock,all_locks,[],5000),
@@ -78,7 +78,7 @@ test_2()->
  %   ok=rpc:call(N2,application,start,[etcd],5000),
 %    pong=rpc:call(N1,etcd,ping,[],5000),
 %    pong=rpc:call(N2,etcd,ping,[],5000),
-    ['do_test@c50','n0@c50','n1@c50']=lists:sort(rpc:call(N2,mnesia,system_info,[db_nodes],5000)),
+    [control_a@c50,'n0@c50','n1@c50']=lists:sort(rpc:call(N2,mnesia,system_info,[db_nodes],5000)),
     
     [etcd_lock,orchestrate_lock]=rpc:call(N2,etcd_lock,all_locks,[],5000),
     {ok,TransActionsId_20}=rpc:call(N2,etcd_lock,try_lock,[orchestrate_lock,1000],5000),
@@ -101,7 +101,7 @@ test_2()->
   %  pong=rpc:call(N3,etcd,ping,[],5000),
 
     [
-     'do_test@c50',
+     control_a@c50,
      'n0@c50',
      'n1@c50',
      'n2@c50'
@@ -126,8 +126,9 @@ test_2()->
     io:format("kill N3  ~p~n",[{?MODULE,?FUNCTION_NAME,?LINE}]),
     [etcd_lock,orchestrate_lock]=rpc:call(N3,etcd_lock,all_locks,[],5000),
     {ok,TransActionsId_40}=rpc:call(N3,etcd_lock,try_lock,[orchestrate_lock,3000],5000),
-    rpc:call(N3,init,stop,[],5000),
-    true=vm_appl_control:check_stopped_node(N3),
+    
+    slave:stop(N3),
+   
     locked=rpc:call(N1,etcd_lock,try_lock,[orchestrate_lock,3000],5000),
     locked=rpc:call(N2,etcd_lock,try_lock,[orchestrate_lock,3000],5000),
     

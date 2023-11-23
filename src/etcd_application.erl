@@ -21,7 +21,7 @@
 
 -export([
 	 create/1,
-	 all_providers/0,
+	 all_applications/0,
 	 get_info/1,
 	 
 	 get_vsn/1,
@@ -53,13 +53,13 @@
 %%%===================================================================
 %%--------------------------------------------------------------------
 %% @doc
-%% get all providers that are stored in dbase
+%% get all all that are stored in dbase
 %% @end
 %%--------------------------------------------------------------------
--spec all_providers() -> ListOfProvidersApplName :: term().
+-spec all_applications() -> ListOfAllApplsName :: term().
 
-all_providers()->
-    gen_server:call(?SERVER, {all_providers},infinity).
+all_applications()->
+    gen_server:call(?SERVER, {all_applications},infinity).
     
 
 %%--------------------------------------------------------------------
@@ -67,7 +67,7 @@ all_providers()->
 %% Get all information related to provider ApplName 
 %% @end
 %%--------------------------------------------------------------------
--spec get_info(ApplName :: string()) -> {ok,ProviderInfo :: term()} | {error, Error :: term()}.
+-spec get_info(ApplName :: string()) -> {ok,ApplInfo :: term()} | {error, Error :: term()}.
 
 get_info(ApplName)->
     gen_server:call(?SERVER, {get_info,ApplName},infinity).
@@ -166,7 +166,7 @@ get_git_path(ApplName)->
     
 %%--------------------------------------------------------------------
 %% @doc
-%% @spec
+%%  
 %% @end
 %%--------------------------------------------------------------------
 ping()-> 
@@ -206,10 +206,10 @@ init([]) ->
     case lists:delete({etcd,node()},rd:fetch_resources(etcd)) of
 	[]->
 	    ok=lib_etcd_application:create_table(),    
-	    ProviderList=lib_etcd_application:git_clone_load(),
-	    Ok_ProviderList=[X||{ok,X}<-ProviderList],
-	    FailedToCreate=[X||{error,X}<-ProviderList],
-	    ?LOG_NOTICE("Successfully created  ",[Ok_ProviderList]),
+	    ApplicationList=lib_etcd_application:git_clone_load(),
+	    Ok_ApplicationList=[X||{ok,X}<-ApplicationList],
+	    FailedToCreate=[X||{error,X}<-ApplicationList],
+	    ?LOG_NOTICE("Successfully created  ",[Ok_ApplicationList]),
 	    case FailedToCreate of
 		[]->
 		    ok;
@@ -224,10 +224,10 @@ init([]) ->
 
 %%--------------------------------------------------------------------
 %% @doc
-%% @spec
+%%  
 %% @end
 %%--------------------------------------------------------------------
-handle_call({all_providers}, _From, State) ->
+handle_call({all_applications}, _From, State) ->
     Reply=lib_etcd_application:get_all_id(),
     {reply, Reply, State};
 

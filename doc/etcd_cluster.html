@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Module etcd_cluster</title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" title="EDoc">
+</head>
+<body bgcolor="white">
+<div class="navbar"><a name="#navbar_top"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<hr>
+
+<h1>Module etcd_cluster</h1>
+<ul class="index"><li><a href="#description">Description</a></li><li><a href="#index">Function Index</a></li><li><a href="#functions">Function Details</a></li></ul>.
+<p>Copyright © (C) 2023, c50</p>
+
+<p><b>Behaviours:</b> <a href="gen_server.html"><tt>gen_server</tt></a>.</p>
+<p><b>Authors:</b> c50 (<a href="mailto:joq62@c50"><tt>joq62@c50</tt></a>).</p>
+
+<h2><a name="description">Description</a></h2>
+  
+<h2><a name="index">Function Index</a></h2>
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#all_clusters-0">all_clusters/0</a></td><td>
+  get all clusternames that are stored in dbase.</td></tr>
+<tr><td valign="top"><a href="#create-1">create/1</a></td><td>
+  Creates a new instance with undefined data.</td></tr>
+<tr><td valign="top"><a href="#create_deployment_records-1">create_deployment_records/1</a></td><td>
+  create deployment_records for cluster ClusterName.</td></tr>
+<tr><td valign="top"><a href="#get_cookie_str-1">get_cookie_str/1</a></td><td>
+  get cookie_str for cluster ClusterName.</td></tr>
+<tr><td valign="top"><a href="#get_deployment_records-1">get_deployment_records/1</a></td><td>
+  get deployment_records for cluster ClusterName.</td></tr>
+<tr><td valign="top"><a href="#get_deployment_spec-1">get_deployment_spec/1</a></td><td>
+  get deployment_spec for cluster ClusterName.</td></tr>
+<tr><td valign="top"><a href="#get_info-1">get_info/1</a></td><td>
+  Get all information related to host HostName.</td></tr>
+<tr><td valign="top"><a href="#handle_call-3">handle_call/3</a></td><td>.</td></tr>
+<tr><td valign="top"><a href="#ping-0">ping/0</a></td><td>.</td></tr>
+<tr><td valign="top"><a href="#set_deployment_records-2">set_deployment_records/2</a></td><td>
+  set deployment_records for cluster ClusterName.</td></tr>
+<tr><td valign="top"><a href="#start_link-0">start_link/0</a></td><td>
+  Starts the server.</td></tr>
+<tr><td valign="top"><a href="#stop-0">stop/0</a></td><td></td></tr>
+</table>
+
+<h2><a name="functions">Function Details</a></h2>
+
+<h3 class="function"><a name="all_clusters-0">all_clusters/0</a></h3>
+<div class="spec">
+<p><tt>all_clusters() -&gt; ListOfClusternames::term()</tt><br></p>
+<p> </p>
+</div><p>
+  get all clusternames that are stored in dbase</p>
+
+<h3 class="function"><a name="create-1">create/1</a></h3>
+<div class="spec">
+<p><tt>create(ClusterName::string()) -&gt; ok | {error, Error::term()}</tt><br></p>
+<p> </p>
+</div><p>
+  Creates a new instance with undefined data</p>
+
+<h3 class="function"><a name="create_deployment_records-1">create_deployment_records/1</a></h3>
+<div class="spec">
+<p><tt>create_deployment_records(ClusterName::string()) -&gt; ok | {error, Error::term()}</tt><br></p>
+<p> </p>
+</div><p>
+  create deployment_records for cluster ClusterName</p>
+
+<h3 class="function"><a name="get_cookie_str-1">get_cookie_str/1</a></h3>
+<div class="spec">
+<p><tt>get_cookie_str(ClusterName::string()) -&gt; {ok, CookieStr::string()} | {error, Error::term()}</tt><br></p>
+<p> </p>
+</div><p>
+  get cookie_str for cluster ClusterName</p>
+
+<h3 class="function"><a name="get_deployment_records-1">get_deployment_records/1</a></h3>
+<div class="spec">
+<p><tt>get_deployment_records(ClusterName::string()) -&gt; {ok, DeploymentRecords::term()} | {error, Error::term()}</tt><br></p>
+<p> </p>
+</div><p>
+  get deployment_records for cluster ClusterName</p>
+
+<h3 class="function"><a name="get_deployment_spec-1">get_deployment_spec/1</a></h3>
+<div class="spec">
+<p><tt>get_deployment_spec(ClusterName::string()) -&gt; {ok, DeploymentSpec::string()} | {error, Error::term()}</tt><br></p>
+<p> </p>
+</div><p>
+  get deployment_spec for cluster ClusterName</p>
+
+<h3 class="function"><a name="get_info-1">get_info/1</a></h3>
+<div class="spec">
+<p><tt>get_info(ClusterName::string()) -&gt; {ok, ClusterInfo::term()} | {error, Error::term()}</tt><br></p>
+<p> </p>
+</div><p>
+  Get all information related to host HostName</p>
+
+<h3 class="function"><a name="handle_call-3">handle_call/3</a></h3>
+<div class="spec">
+<p><tt>handle_call(UnMatchedSignal, From, State) -&gt; any()</tt></p>
+<p> </p>
+</div><p>
+ </p>
+
+<h3 class="function"><a name="ping-0">ping/0</a></h3>
+<div class="spec">
+<p><tt>ping() -&gt; any()</tt></p>
+<p> </p>
+</div><p>
+ </p>
+
+<h3 class="function"><a name="set_deployment_records-2">set_deployment_records/2</a></h3>
+<div class="spec">
+<p><tt>set_deployment_records(ClusterName::string(), DeploymentRecords::term()) -&gt; ok | {error, Error::term()}</tt><br></p>
+<p> </p>
+</div><p>
+  set deployment_records for cluster ClusterName</p>
+
+<h3 class="function"><a name="start_link-0">start_link/0</a></h3>
+<div class="spec">
+<p><tt>start_link() -&gt; {ok, Pid::pid()} | {error, Error::{already_started, pid()}} | {error, Error::term()} | ignore</tt><br></p>
+<p> </p>
+</div><p>
+  Starts the server</p>
+
+<h3 class="function"><a name="stop-0">stop/0</a></h3>
+<div class="spec">
+<p><tt>stop() -&gt; any()</tt></p>
+<p> </p>
+</div>
+<hr>
+
+<div class="navbar"><a name="#navbar_bottom"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<p><i>Generated by EDoc</i></p>
+</body>
+</html>

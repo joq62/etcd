@@ -131,7 +131,7 @@ get_deployment_records(ClusterName)->
     
 %%--------------------------------------------------------------------
 %% @doc
-%% @spec
+%%  
 %% @end
 %%--------------------------------------------------------------------
 ping()-> 
@@ -189,7 +189,7 @@ init([]) ->
 
 %%--------------------------------------------------------------------
 %% @doc
-%% @spec
+%%  
 %% @end
 %%--------------------------------------------------------------------
 handle_call({all_clusters}, _From, State) ->
@@ -208,7 +208,7 @@ handle_call({get_deployment_spec,ClusterName}, _From, State) ->
     Reply=lib_etcd_cluster:get(deployment_spec,ClusterName),
     {reply, Reply, State};
 
-handle_call({create_deployment_records,ClusterName}, _From, State) ->
+handle_call({create_deployment_records,_ClusterName}, _From, State) ->
     Reply=not_implemented,
     {reply, Reply, State};
 

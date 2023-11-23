@@ -1,0 +1,161 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Module etcd_application</title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" title="EDoc">
+</head>
+<body bgcolor="white">
+<div class="navbar"><a name="#navbar_top"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<hr>
+
+<h1>Module etcd_application</h1>
+<ul class="index"><li><a href="#description">Description</a></li><li><a href="#index">Function Index</a></li><li><a href="#functions">Function Details</a></li></ul>.
+<p>Copyright © (C) 2023, c50</p>
+
+<p><b>Behaviours:</b> <a href="gen_server.html"><tt>gen_server</tt></a>.</p>
+<p><b>Authors:</b> c50 (<a href="mailto:joq62@c50"><tt>joq62@c50</tt></a>).</p>
+
+<h2><a name="description">Description</a></h2>
+  
+<h2><a name="index">Function Index</a></h2>
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#all_applications-0">all_applications/0</a></td><td>
+  get all all that are stored in dbase.</td></tr>
+<tr><td valign="top"><a href="#create-1">create/1</a></td><td>
+  Creates a new instance with undefined data.</td></tr>
+<tr><td valign="top"><a href="#get_app-1">get_app/1</a></td><td>
+  get app from provider ApplName.</td></tr>
+<tr><td valign="top"><a href="#get_erl_args-1">get_erl_args/1</a></td><td>
+  get erl_args from provider ApplName.</td></tr>
+<tr><td valign="top"><a href="#get_git_path-1">get_git_path/1</a></td><td>
+  get git  path for provider ApplName.</td></tr>
+<tr><td valign="top"><a href="#get_info-1">get_info/1</a></td><td>
+  Get all information related to provider ApplName.</td></tr>
+<tr><td valign="top"><a href="#get_vsn-1">get_vsn/1</a></td><td>
+  get vsn for provider ApplName.</td></tr>
+<tr><td valign="top"><a href="#handle_call-3">handle_call/3</a></td><td>.</td></tr>
+<tr><td valign="top"><a href="#ping-0">ping/0</a></td><td>.</td></tr>
+<tr><td valign="top"><a href="#set_app-2">set_app/2</a></td><td>
+  set app Appn for provider ApplName.</td></tr>
+<tr><td valign="top"><a href="#set_erl_args-2">set_erl_args/2</a></td><td>
+  set erl_args ErlArgs for provider ApplName.</td></tr>
+<tr><td valign="top"><a href="#set_git_path-2">set_git_path/2</a></td><td>
+  set git_path GitPathfor  provider ApplName.</td></tr>
+<tr><td valign="top"><a href="#set_vsn-2">set_vsn/2</a></td><td>
+  set vsn Vsn for provider ApplName.</td></tr>
+<tr><td valign="top"><a href="#start_link-0">start_link/0</a></td><td>
+  Starts the server.</td></tr>
+<tr><td valign="top"><a href="#stop-0">stop/0</a></td><td></td></tr>
+</table>
+
+<h2><a name="functions">Function Details</a></h2>
+
+<h3 class="function"><a name="all_applications-0">all_applications/0</a></h3>
+<div class="spec">
+<p><tt>all_applications() -&gt; ListOfAllApplsName::term()</tt><br></p>
+<p> </p>
+</div><p>
+  get all all that are stored in dbase</p>
+
+<h3 class="function"><a name="create-1">create/1</a></h3>
+<div class="spec">
+<p><tt>create(ApplName::string()) -&gt; ok | {error, Error::term()}</tt><br></p>
+<p> </p>
+</div><p>
+  Creates a new instance with undefined data</p>
+
+<h3 class="function"><a name="get_app-1">get_app/1</a></h3>
+<div class="spec">
+<p><tt>get_app(ApplName::string()) -&gt; {ok, App::atom()} | {error, Error::term()}</tt><br></p>
+<p> </p>
+</div><p>
+  get app from provider ApplName</p>
+
+<h3 class="function"><a name="get_erl_args-1">get_erl_args/1</a></h3>
+<div class="spec">
+<p><tt>get_erl_args(ApplName::string()) -&gt; {ok, ErlArgs::string()} | {error, Error::term()}</tt><br></p>
+<p> </p>
+</div><p>
+  get erl_args from provider ApplName</p>
+
+<h3 class="function"><a name="get_git_path-1">get_git_path/1</a></h3>
+<div class="spec">
+<p><tt>get_git_path(ApplName::string()) -&gt; {ok, GitPath::string()} | {error, Error::term()}</tt><br></p>
+<p> </p>
+</div><p>
+  get git  path for provider ApplName</p>
+
+<h3 class="function"><a name="get_info-1">get_info/1</a></h3>
+<div class="spec">
+<p><tt>get_info(ApplName::string()) -&gt; {ok, ApplInfo::term()} | {error, Error::term()}</tt><br></p>
+<p> </p>
+</div><p>
+  Get all information related to provider ApplName</p>
+
+<h3 class="function"><a name="get_vsn-1">get_vsn/1</a></h3>
+<div class="spec">
+<p><tt>get_vsn(ApplName::string()) -&gt; {ok, Vsn::string()} | {error, Error::term()}</tt><br></p>
+<p> </p>
+</div><p>
+  get vsn for provider ApplName</p>
+
+<h3 class="function"><a name="handle_call-3">handle_call/3</a></h3>
+<div class="spec">
+<p><tt>handle_call(UnMatchedSignal, From, State) -&gt; any()</tt></p>
+<p> </p>
+</div><p>
+ </p>
+
+<h3 class="function"><a name="ping-0">ping/0</a></h3>
+<div class="spec">
+<p><tt>ping() -&gt; any()</tt></p>
+<p> </p>
+</div><p>
+ </p>
+
+<h3 class="function"><a name="set_app-2">set_app/2</a></h3>
+<div class="spec">
+<p><tt>set_app(App::atom(), ApplName::string()) -&gt; ok | {error, Error::term()}</tt><br></p>
+<p> </p>
+</div><p>
+  set app Appn for provider ApplName</p>
+
+<h3 class="function"><a name="set_erl_args-2">set_erl_args/2</a></h3>
+<div class="spec">
+<p><tt>set_erl_args(ErlArgs::string(), ApplName::string()) -&gt; ok | {error, Error::term()}</tt><br></p>
+<p> </p>
+</div><p>
+  set erl_args ErlArgs for provider ApplName</p>
+
+<h3 class="function"><a name="set_git_path-2">set_git_path/2</a></h3>
+<div class="spec">
+<p><tt>set_git_path(GitPath::string(), ApplName::string()) -&gt; ok | {error, Error::term()}</tt><br></p>
+<p> </p>
+</div><p>
+  set git_path GitPathfor  provider ApplName</p>
+
+<h3 class="function"><a name="set_vsn-2">set_vsn/2</a></h3>
+<div class="spec">
+<p><tt>set_vsn(Vsn::string(), ApplName::string()) -&gt; ok | {error, Error::term()}</tt><br></p>
+<p> </p>
+</div><p>
+  set vsn Vsn for provider ApplName</p>
+
+<h3 class="function"><a name="start_link-0">start_link/0</a></h3>
+<div class="spec">
+<p><tt>start_link() -&gt; {ok, Pid::pid()} | {error, Error::{already_started, pid()}} | {error, Error::term()} | ignore</tt><br></p>
+<p> </p>
+</div><p>
+  Starts the server</p>
+
+<h3 class="function"><a name="stop-0">stop/0</a></h3>
+<div class="spec">
+<p><tt>stop() -&gt; any()</tt></p>
+<p> </p>
+</div>
+<hr>
+
+<div class="navbar"><a name="#navbar_bottom"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<p><i>Generated by EDoc</i></p>
+</body>
+</html>

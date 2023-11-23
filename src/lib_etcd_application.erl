@@ -11,7 +11,7 @@
 %% Include files
 %% --------------------------------------------------------------------
 -include_lib("stdlib/include/qlc.hrl").
--include("etcd_provider.hrl").
+-include("etcd_application.hrl").
 
 %% External exports
 -export([create_table/0,create_table/2,add_node/2]).
@@ -23,7 +23,7 @@
 
 %%--------------------------------------------------------------------
 %% @doc
-%% @spec
+%%  
 %% @end
 %%--------------------------------------------------------------------
 
@@ -39,7 +39,7 @@ create_table(NodeList,StorageType)->
 
 %%--------------------------------------------------------------------
 %% @doc
-%% @spec
+%%  
 %% @end
 %%--------------------------------------------------------------------
 
@@ -57,7 +57,7 @@ add_node(Node,StorageType)->
 
 %%--------------------------------------------------------------------
 %% @doc
-%% @spec
+%%  
 %% @end
 %%--------------------------------------------------------------------
 
@@ -86,7 +86,7 @@ create(ApplName,Vsn,App,ErlArgs,GitPath)->
 
 %%--------------------------------------------------------------------
 %% @doc
-%% @spec
+%%  
 %% @end
 %%--------------------------------------------------------------------
 delete(Spec) ->
@@ -97,7 +97,7 @@ delete(Spec) ->
     mnesia:transaction(F).
 %%--------------------------------------------------------------------
 %% @doc
-%% @spec
+%%  
 %% @end
 %%--------------------------------------------------------------------
 member(ApplName)->
@@ -113,7 +113,7 @@ member(ApplName)->
 
 %%--------------------------------------------------------------------
 %% @doc
-%% @spec
+%%  
 %% @end
 %%--------------------------------------------------------------------
 get_all() ->
@@ -167,7 +167,7 @@ get_all_id()->
 
 %%--------------------------------------------------------------------
 %% @doc
-%% @spec
+%%  
 %% @end
 %%--------------------------------------------------------------------
 
@@ -186,7 +186,7 @@ do(Q) ->
 %% --------------------------------------------------------------------
 %%--------------------------------------------------------------------
 %% @doc
-%% @spec
+%%  
 %% @end
 %%--------------------------------------------------------------------
 git_clone_load()->
@@ -209,15 +209,15 @@ git_clone_load()->
     Result.
 %%--------------------------------------------------------------------
 %% @doc
-%% @spec
+%%  
 %% @end
 %%--------------------------------------------------------------------
 
 git_clone()->
     TempDirName=erlang:integer_to_list(os:system_time(microsecond),36)++".dir",
     ok=file:make_dir(TempDirName),
-    GitDir=filename:join(TempDirName,?ProviderSpecDir),
-    GitPath=?GitPathProviderSpecs,
+    GitDir=filename:join(TempDirName,?SpecDir),
+    GitPath=?GitPathSpecs,
     file:del_dir_r(GitDir),    
     ok=file:make_dir(GitDir),
     GitResult=cmn_appl:git_clone_to_dir(node(),GitPath,GitDir),
@@ -231,7 +231,7 @@ git_clone()->
 
 %%--------------------------------------------------------------------
 %% @doc
-%% @spec
+%%  
 %% @end
 %%--------------------------------------------------------------------
 
@@ -248,7 +248,7 @@ from_file([FileName|T],Dir,Acc)->
 		   case file:consult(FullFileName) of
 			{error,Reason}->
 			    [{error,[Reason,FileName,Dir,?MODULE,?LINE]}|Acc];
-			{ok,[{provider_spec,Info}]}->
+			{ok,[{application_spec,Info}]}->
 			    {appl_name,ApplName}=lists:keyfind(appl_name,1,Info),
 			    {vsn,Vsn}=lists:keyfind(vsn,1,Info),
 			    {app,App}=lists:keyfind(app,1,Info),
