@@ -28,21 +28,22 @@ start()->
 
     
        % dbetcd
-    ok=etcd_infra_test:start(),
-    ok=etcd_zigbee_device_test:start(),
-    ok=etcd_host_test:start(node()),
-    ok=etcd_application_test:start(node()),
-    ok=etcd_lock_test:start(node()),
-    ok=etcd_deployment_test:start(),
-    ok=etcd_cluster_test:start(),
-    ok=etcd_paas_config_test:start(),
-    ok=dist_test:start(),
+    ok=etcd_sd_test:start(),
+%    ok=etcd_infra_test:start(),
+%    ok=etcd_zigbee_device_test:start(),
+%    ok=etcd_host_test:start(node()),
+%    ok=etcd_application_test:start(node()),
+%    ok=etcd_lock_test:start(node()),
+%    ok=etcd_deployment_test:start(),
+%    ok=etcd_cluster_test:start(),
+%    ok=etcd_paas_config_test:start(),
+%    ok=dist_test:start(),
    
                  
    
     io:format("Test OK !!! ~p~n",[?MODULE]),
-    timer:sleep(2000),
-    init:stop(),
+%    timer:sleep(2000),
+%    init:stop(),
     ok.
 
 %% --------------------------------------------------------------------

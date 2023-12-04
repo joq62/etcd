@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Module etcd_sd</title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" title="EDoc">
+</head>
+<body bgcolor="white">
+<div class="navbar"><a name="#navbar_top"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<hr>
+
+<h1>Module etcd_sd</h1>
+<ul class="index"><li><a href="#description">Description</a></li><li><a href="#index">Function Index</a></li><li><a href="#functions">Function Details</a></li></ul>.
+<p>Copyright © (C) 2023, c50</p>
+
+<p><b>Behaviours:</b> <a href="gen_server.html"><tt>gen_server</tt></a>.</p>
+<p><b>Authors:</b> c50 (<a href="mailto:joq62@c50"><tt>joq62@c50</tt></a>).</p>
+
+<h2><a name="description">Description</a></h2>
+  
+<h2><a name="index">Function Index</a></h2>
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#all_services-0">all_services/0</a></td><td>
+  get all locks name that are stored in dbase.</td></tr>
+<tr><td valign="top"><a href="#clean_up-0">clean_up/0</a></td><td>
+  Removes passive applications.</td></tr>
+<tr><td valign="top"><a href="#create-3">create/3</a></td><td>
+  Creates a new instance.</td></tr>
+<tr><td valign="top"><a href="#discover-1">discover/1</a></td><td>
+  unlock.</td></tr>
+<tr><td valign="top"><a href="#get_info-2">get_info/2</a></td><td>
+  Get all information related to lock Lock.</td></tr>
+<tr><td valign="top"><a href="#handle_call-3">handle_call/3</a></td><td>.</td></tr>
+<tr><td valign="top"><a href="#ping-0">ping/0</a></td><td>.</td></tr>
+<tr><td valign="top"><a href="#register-3">register/3</a></td><td>
+  register and reregister a service.</td></tr>
+<tr><td valign="top"><a href="#start_link-0">start_link/0</a></td><td>
+  Starts the server.</td></tr>
+<tr><td valign="top"><a href="#stop-0">stop/0</a></td><td></td></tr>
+<tr><td valign="top"><a href="#unregister-2">unregister/2</a></td><td>
+  unregister a service.</td></tr>
+</table>
+
+<h2><a name="functions">Function Details</a></h2>
+
+<h3 class="function"><a name="all_services-0">all_services/0</a></h3>
+<div class="spec">
+<p><tt>all_services() -&gt; ListOfServices::term()</tt><br></p>
+<p> </p>
+</div><p>
+  get all locks name that are stored in dbase</p>
+
+<h3 class="function"><a name="clean_up-0">clean_up/0</a></h3>
+<div class="spec">
+<p><tt>clean_up() -&gt; ok | {error, Error::term()}</tt><br></p>
+<p> </p>
+</div><p>
+  Removes passive applications</p>
+
+<h3 class="function"><a name="create-3">create/3</a></h3>
+<div class="spec">
+<p><tt>create(ServiceId::atom(), Module::atom, Node::node()) -&gt; ok | {error, Error::term()}</tt><br></p>
+<p> </p>
+</div><p>
+  Creates a new instance</p>
+
+<h3 class="function"><a name="discover-1">discover/1</a></h3>
+<div class="spec">
+<p><tt>discover(ServiceId::atom()) -&gt; ListOfNodesModules::term() | {error, Error::term()}</tt><br></p>
+<p> </p>
+</div><p>
+  unlock</p>
+
+<h3 class="function"><a name="get_info-2">get_info/2</a></h3>
+<div class="spec">
+<p><tt>get_info(ServiceId::atom(), Node::node()) -&gt; {ok, ServiceInfo::term()} | {error, Error::term()}</tt><br></p>
+<p> </p>
+</div><p>
+  Get all information related to lock Lock</p>
+
+<h3 class="function"><a name="handle_call-3">handle_call/3</a></h3>
+<div class="spec">
+<p><tt>handle_call(UnMatchedSignal, From, State) -&gt; any()</tt></p>
+<p> </p>
+</div><p>
+ </p>
+
+<h3 class="function"><a name="ping-0">ping/0</a></h3>
+<div class="spec">
+<p><tt>ping() -&gt; any()</tt></p>
+<p> </p>
+</div><p>
+ </p>
+
+<h3 class="function"><a name="register-3">register/3</a></h3>
+<div class="spec">
+<p><tt>register(ServiceId::atom(), Module::atom, Node::node()) -&gt; {ok, Transaction::integer()} | {error, Error::term()}</tt><br></p>
+<p> </p>
+</div><p>
+  register and reregister a service</p>
+
+<h3 class="function"><a name="start_link-0">start_link/0</a></h3>
+<div class="spec">
+<p><tt>start_link() -&gt; {ok, Pid::pid()} | {error, Error::{already_started, pid()}} | {error, Error::term()} | ignore</tt><br></p>
+<p> </p>
+</div><p>
+  Starts the server</p>
+
+<h3 class="function"><a name="stop-0">stop/0</a></h3>
+<div class="spec">
+<p><tt>stop() -&gt; any()</tt></p>
+<p> </p>
+</div>
+
+<h3 class="function"><a name="unregister-2">unregister/2</a></h3>
+<div class="spec">
+<p><tt>unregister(ServiceId::atom(), Node::node()) -&gt; {ok, Transaction::integer()} | {error, Error::term()}</tt><br></p>
+<p> </p>
+</div><p>
+  unregister a service</p>
+<hr>
+
+<div class="navbar"><a name="#navbar_bottom"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<p><i>Generated by EDoc</i></p>
+</body>
+</html>
