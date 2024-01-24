@@ -254,7 +254,7 @@ from_file([FileName|T],Dir,Acc)->
 			{error,Reason}->
 			    [{error,[Reason,FileName,Dir,?MODULE,?LINE]}|Acc];
 			{ok,[{host_spec,Info}]}->
-			   io:format("Info ~p~n",[{Info,?MODULE,?LINE}]),
+			 %  io:format("Info ~p~n",[{Info,?MODULE,?LINE}]),
 			    {hostname,HostName}=lists:keyfind(hostname,1,Info),
 			    {ip,Ip}=lists:keyfind(ip,1,Info),
 			    {ssh_port,SshPort}=lists:keyfind(ssh_port,1,Info),

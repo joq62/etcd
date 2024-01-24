@@ -90,7 +90,7 @@ init([]) ->
     [rd:add_local_resource(ResourceType,Resource)||{ResourceType,Resource}<-?LocalResourceTuples],
     [rd:add_target_resource_type(TargetType)||TargetType<-?TargetTypes],
     rd:trade_resources(),
-    timer:sleep(5000),
+    timer:sleep(2000),
       
     %% ----------------------
 
@@ -110,7 +110,7 @@ init([]) ->
 	    ok
     end,   
       
-    ?LOG_NOTICE("Server started ",[]),
+    ?LOG_NOTICE("Server started ",[?MODULE]),
     
     {ok, #state{}}.
 
