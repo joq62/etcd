@@ -62,11 +62,7 @@ start()->
 setup()->
     io:format("Start ~p~n",[{?MODULE,?FUNCTION_NAME}]),
     ok=application:start(rd),
-    pong=rd:ping(),
-    
-    {ok,Dir}=file:get_cwd(),
-    application:set_env([{mnesia,[{dir,Dir}]}]),
-
+    pong=rd:ping(),    
     ok=application:start(etcd),
     pong=etcd:ping(),
     ok.
