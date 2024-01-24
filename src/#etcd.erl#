@@ -110,7 +110,7 @@ init([]) ->
 	    ok
     end,   
       
-    ?LOG_NOTICE("Server started ",[]),
+    ?LOG_NOTICE("Server started ",[?MODULE]),
     
     {ok, #state{}}.
 

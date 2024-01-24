@@ -216,9 +216,13 @@ init([]) ->
 		_->
 		    ?LOG_NOTICE("Failed to create   ",[FailedToCreate])
 	    end;
-	_->
+	Resources->
+	    ?LOG_NOTICE("Resources ",[Resources]),
 	    ok
     end,
+    
+    ?LOG_NOTICE("Server started ",[?MODULE]),
+    
     {ok, #state{}}.
 
 
