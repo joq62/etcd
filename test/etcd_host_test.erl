@@ -58,10 +58,10 @@ read_specs_test(Node)->
     true=lists:member( ?HostNameTest,AllHosts),
 
     {
-     "c50","172.26.158.249",22,"joq62","festum01",[]
+     "c50","172.18.221.251",22,"joq62","festum01",[]
     }=rpc:call(Node,etcd_host,get_info,[?HostNameTest],5000),
     
-    {ok,"172.26.158.249"}=rpc:call(Node,etcd_host,get_ip,[?HostNameTest],5000),
+    {ok,"172.18.221.251"}=rpc:call(Node,etcd_host,get_ip,[?HostNameTest],5000),
     {ok,22}=rpc:call(Node,etcd_host,get_port,[?HostNameTest],5000),
     {ok,"joq62"}=rpc:call(Node,etcd_host,get_user,[?HostNameTest],5000),
     {ok,"festum01"}=rpc:call(Node,etcd_host,get_passwd,[?HostNameTest],5000),

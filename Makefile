@@ -39,7 +39,7 @@ no_ebin_commit:
 	mkdir ebin;		
 	rebar3 compile;	
 	cp _build/default/lib/*/ebin/* ebin;
-	rm -rf _build*;
+	rm -rf _build;
 	rm -rf ebin;
 	rebar3 edoc;
 #	git add *;
@@ -147,6 +147,8 @@ eunit:
 	#INFO: Creating eunit test code using test_ebin dir;
 	mkdir test_ebin;
 	cp test/*.app test_ebin;
+	rm test/dependent_apps.erl;
+	cp /home/joq62/erlang/dev_support/dependent_apps.erl test;
 	erlc -I include -I /home/joq62/erlang/include -o test_ebin test/*.erl;
 	#INFO: Creating Common applications needed for testing
 	#INFO: Creating log

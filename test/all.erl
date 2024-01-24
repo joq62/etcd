@@ -28,10 +28,10 @@ start()->
 
     
        % dbetcd
-    ok=etcd_sd_test:start(),
+    
 %    ok=etcd_infra_test:start(),
 %    ok=etcd_zigbee_device_test:start(),
-%    ok=etcd_host_test:start(node()),
+    ok=etcd_host_test:start(node()),
 %    ok=etcd_application_test:start(node()),
 %    ok=etcd_lock_test:start(node()),
 %    ok=etcd_deployment_test:start(),
